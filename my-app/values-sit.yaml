@@ -1,0 +1,15 @@
+env: sit
+replicaCount: 1
+
+image:
+  repository: nginx
+  tag: alpine
+
+nodeSelector:
+  pool: sit
+
+tolerations:
+  - key: "env"
+    operator: "Equal"
+    value: "sit"
+    effect: "NoSchedule"

@@ -1,0 +1,15 @@
+env: uat
+replicaCount: 2
+
+image:
+  repository: nginx
+  tag: alpine
+
+nodeSelector:
+  pool: uat
+
+tolerations:
+  - key: "env"
+    operator: "Equal"
+    value: "uat"
+    effect: "NoSchedule"
