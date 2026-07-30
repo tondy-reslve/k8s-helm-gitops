@@ -24,3 +24,15 @@ vault:
     enabled: true
     serviceType: NodePort
     serviceNodePort: 32000
+
+  injector:
+    enabled: true
+    nodeSelector:
+      pool: infra
+    resources:
+      requests:
+        memory: 256Mi
+        cpu: 250m
+      limits:
+        memory: 512Mi
+        cpu: 500m
