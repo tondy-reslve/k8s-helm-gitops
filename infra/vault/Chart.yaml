@@ -1,0 +1,9 @@
+apiVersion: v2
+name: infra-vault
+description: HashiCorp Vault HA with Raft Storage
+type: application
+version: 1.0.0
+dependencies:
+  - name: vault
+    repository: https://helm.releases.hashicorp.com
+    version: 0.28.0
