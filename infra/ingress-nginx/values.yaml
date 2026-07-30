@@ -1,0 +1,9 @@
+ingress-nginx:
+  controller:
+    nodeSelector:
+      pool: infra
+    service:
+      type: NodePort
+      nodePorts:
+        http: 30080
+        https: 30443
