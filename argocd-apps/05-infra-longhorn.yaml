@@ -38,4 +38,5 @@ spec:
       jsonPointers:
         - /status
         - /metadata/annotations
-        - /spec/conversion/webhook/clientConfig/caBundle
+        - /metadata/labels
+        - /spec
