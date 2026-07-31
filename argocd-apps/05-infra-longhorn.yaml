@@ -1,0 +1,30 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: longhorn
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-10"  # 優先級調高，讓儲存層提早啟動
+spec:
+  project: default
+  source:
+    repoURL: 'https://charts.longhorn.io'
+    chart: longhorn
+    targetRevision: 1.6.1
+    helm:
+      values: |
+        defaultSettings:
+          defaultDataPath: /var/lib/longhorn
+          replicaAutoBalance: best-effort
+        persistence:
+          defaultClass: true
+          defaultClassReplicaCount: 3
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: longhorn-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
