@@ -4,7 +4,7 @@ metadata:
   name: longhorn
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "-10"  # 優先級調高，讓儲存層提早啟動
+    argocd.argoproj.io/sync-wave: "-10"
 spec:
   project: default
   source:
@@ -28,3 +28,4 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+      - ServerSideApply=true
