@@ -1,0 +1,40 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: minio
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-5"
+spec:
+  project: default
+  source:
+    repoURL: 'https://charts.min.io/'
+    chart: minio
+    targetRevision: 5.0.15
+    helm:
+      values: |
+        mode: standalone
+        replicas: 1
+        
+        rootUser: "admin"
+        rootPassword: "admin@12345"
+        
+        persistence:
+          enabled: true
+          storageClass: "longhorn"
+          size: 30Gi
+          
+        resources:
+          requests:
+            memory: 256Mi
+            cpu: 100m
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: minio-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
