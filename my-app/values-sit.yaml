@@ -13,3 +13,13 @@ tolerations:
     operator: "Equal"
     value: "sit"
     effect: "NoSchedule"
+
+podAnnotations:
+  vault.hashicorp.com/agent-inject: "true"
+  vault.hashicorp.com/role: "my-app-sit-role"
+  vault.hashicorp.com/agent-inject-secret-db-config: "secret/data/my-app-sit/config"
+  vault.hashicorp.com/agent-inject-template-db-config: |
+    {{- with secret "secret/data/my-app-sit/config" -}}
+    DB_USER={{ .Data.data.username }}
+    DB_PASSWORD={{ .Data.data.password }}
+    {{- end -}}
