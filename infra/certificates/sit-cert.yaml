@@ -1,13 +1,10 @@
 certificates:
   redis-crt:
     namespace: my-app-sit
+    vaultRole: redis-sit-role
     dnsNames:
       - "redis.my-app-sit.svc"
       - "redis.my-app-sit.svc.cluster.local"
       - "*.redis-headless.my-app-sit.svc.cluster.local"
-
-  kafka-crt:
-    namespace: my-app-sit
-    dnsNames:
-      - "kafka.my-app-sit.svc"
-      - "kafka.my-app-sit.svc.cluster.local"
+      - "*.redis-sentinel.my-app-sit.svc.cluster.local"
+      - "localhost"

@@ -1,6 +1,23 @@
 {{- range $certName, $config := .Values.certificates }}
 ---
 apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: {{ $certName }}-issuer
+  namespace: {{ $config.namespace }}
+spec:
+  vault:
+    path: pki/sign/{{ $config.vaultRole }}
+    server: http://vault.vault.svc:8200
+    auth:
+      kubernetes:
+        mountPath: /v1/auth/kubernetes
+        role: my-app-sit-role
+        secretRef:
+          name: cert-manager-vault-token
+          key: token
+---
+apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: {{ $certName }}
@@ -10,8 +27,8 @@ spec:
   duration: 2160h
   renewBefore: 360h
   issuerRef:
-    name: vault-issuer
-    kind: ClusterIssuer
+    name: {{ $certName }}-issuer
+    kind: Issuer
   commonName: {{ index $config.dnsNames 0 }}
   dnsNames:
     {{- toYaml $config.dnsNames | nindent 4 }}
