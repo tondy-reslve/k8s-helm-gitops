@@ -1,0 +1,44 @@
+{{/* SPDX-License-Identifier: Apache-2.0 */}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "redis.configMapName" . }}
+  labels:
+    {{- include "redis.labels" . | nindent 4 }}
+data:
+  redis-standalone.conf: |
+    {{- include "redis.commonConfig" . | nindent 4 }}
+    {{- with .Values.config.redis }}
+    {{ . | nindent 4 }}
+    {{- end }}
+  redis-primary.conf: |
+    {{- include "redis.commonConfig" . | nindent 4 }}
+    {{- with .Values.config.redis }}
+    {{ . | nindent 4 }}
+    {{- end }}
+  redis-replica.conf: |
+    {{- include "redis.commonConfig" . | nindent 4 }}
+    replica-read-only yes
+    {{- with .Values.config.redis }}
+    {{ . | nindent 4 }}
+    {{- end }}
+  redis-cluster.conf: |
+    {{- include "redis.commonConfig" . | nindent 4 }}
+    cluster-enabled yes
+    cluster-config-file nodes.conf
+    cluster-node-timeout 5000
+    appendonly yes
+    {{- with .Values.config.redis }}
+    {{ . | nindent 4 }}
+    {{- end }}
+  sentinel.conf: |
+    port {{ .Values.service.ports.sentinel }}
+    dir /tmp
+    sentinel resolve-hostnames yes
+    sentinel monitor {{ .Values.sentinel.masterSet }} {{ include "redis.primaryPodFqdn" . }} {{ .Values.service.ports.redis }} {{ .Values.sentinel.quorum }}
+    sentinel down-after-milliseconds {{ .Values.sentinel.masterSet }} {{ .Values.sentinel.downAfterMilliseconds }}
+    sentinel failover-timeout {{ .Values.sentinel.masterSet }} {{ .Values.sentinel.failoverTimeout }}
+    sentinel parallel-syncs {{ .Values.sentinel.masterSet }} {{ .Values.sentinel.parallelSyncs }}
+    {{- with .Values.config.sentinel }}
+    {{ . | nindent 4 }}
+    {{- end }}

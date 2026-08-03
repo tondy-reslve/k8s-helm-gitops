@@ -17,7 +17,7 @@ spec:
         replicas: 1
         
         rootUser: "admin"
-        rootPassword: "admin@12345"
+        rootPassword: "Admin@12345"
         
         persistence:
           enabled: true

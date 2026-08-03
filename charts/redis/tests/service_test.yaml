@@ -1,0 +1,103 @@
+# SPDX-License-Identifier: Apache-2.0
+suite: Service
+templates:
+  - service.yaml
+release:
+  name: test
+  namespace: default
+tests:
+  - it: should render headless and client services
+    asserts:
+      - hasDocuments:
+          count: 2
+
+  - it: should have headless service
+    documentIndex: 0
+    asserts:
+      - isKind:
+          of: Service
+      - equal:
+          path: metadata.name
+          value: test-redis-headless
+      - equal:
+          path: metadata.labels["app.kubernetes.io/component"]
+          value: redis-headless
+      - equal:
+          path: spec.clusterIP
+          value: None
+
+  - it: should have client service
+    documentIndex: 1
+    asserts:
+      - isKind:
+          of: Service
+      - equal:
+          path: metadata.name
+          value: test-redis-client
+      - equal:
+          path: metadata.labels["app.kubernetes.io/component"]
+          value: redis-client
+      - equal:
+          path: spec.type
+          value: ClusterIP
+
+  - it: should expose port 6379
+    documentIndex: 1
+    asserts:
+      - contains:
+          path: spec.ports
+          content:
+            name: redis
+            port: 6379
+            targetPort: redis
+
+  - it: should render a dedicated metrics service when metrics are enabled
+    set:
+      metrics.enabled: true
+    asserts:
+      - hasDocuments:
+          count: 3
+      - equal:
+          path: metadata.name
+          value: test-redis-metrics
+        documentIndex: 1
+      - equal:
+          path: metadata.labels["app.kubernetes.io/component"]
+          value: metrics
+        documentIndex: 1
+      - equal:
+          path: spec.selector["app.kubernetes.io/component"]
+          value: redis
+        documentIndex: 1
+      - contains:
+          path: spec.ports
+          content:
+            name: metrics
+            port: 9121
+            targetPort: metrics
+        documentIndex: 1
+
+  - it: should honor service type for cluster client service
+    set:
+      architecture: cluster
+      service.type: LoadBalancer
+    asserts:
+      - isKind:
+          of: Service
+        documentIndex: 1
+      - equal:
+          path: metadata.name
+          value: test-redis-client
+        documentIndex: 1
+      - equal:
+          path: metadata.labels["app.kubernetes.io/component"]
+          value: redis-client
+        documentIndex: 1
+      - equal:
+          path: spec.type
+          value: LoadBalancer
+        documentIndex: 1
+      - equal:
+          path: spec.selector["app.kubernetes.io/role"]
+          value: cluster
+        documentIndex: 1

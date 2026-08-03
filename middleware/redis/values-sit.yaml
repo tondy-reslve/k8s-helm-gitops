@@ -1,0 +1,35 @@
+architecture: sentinel
+
+image:
+  repository: docker.io/library/redis
+  tag: "7.4.9"
+  pullPolicy: IfNotPresent
+
+podAnnotations:
+  vault.hashicorp.com/agent-inject: "true"
+  vault.hashicorp.com/role: "my-app-sit-role"
+  vault.hashicorp.com/tls-skip-verify: "true"
+  vault.hashicorp.com/namespace: "admin"
+
+  vault.hashicorp.com/agent-inject-secret-redis-password: "secret/data/sit/redis"
+  vault.hashicorp.com/agent-inject-template-redis-password: |
+    {{- with secret "secret/data/sit/redis" -}}
+    {{ index .Data.data "redis-password" }}
+    {{- end -}}
+
+tls:
+  enabled: true
+  existingSecret: "redis-crt"
+  certFilename: tls.crt
+  keyFilename: tls.key
+  caFilename: ca.crt
+
+replication:
+  primary:
+    persistence:
+      storageClass: "longhorn"
+      size: 5Gi
+  replica:
+    persistence:
+      storageClass: "longhorn"
+      size: 5Gi

@@ -1,0 +1,18 @@
+{{- range $certName, $config := .Values.certificates }}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ $certName }}
+  namespace: {{ $config.namespace }}
+spec:
+  secretName: {{ $certName }}
+  duration: 2160h
+  renewBefore: 360h
+  issuerRef:
+    name: vault-issuer
+    kind: ClusterIssuer
+  commonName: {{ index $config.dnsNames 0 }}
+  dnsNames:
+    {{- toYaml $config.dnsNames | nindent 4 }}
+{{- end }}

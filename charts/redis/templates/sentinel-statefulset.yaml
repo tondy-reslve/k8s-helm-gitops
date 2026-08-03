@@ -1,0 +1,85 @@
+{{/* SPDX-License-Identifier: Apache-2.0 */}}
+{{- if include "redis.isSentinel" . }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "redis.sentinelStatefulSetName" . }}
+  labels:
+    {{- include "redis.labels" . | nindent 4 }}
+spec:
+  serviceName: {{ include "redis.sentinelServiceName" . }}
+  replicas: {{ .Values.sentinel.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "redis.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: sentinel
+  template:
+    metadata:
+      labels:
+        {{- include "redis.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: sentinel
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      {{- include "redis.podSpecCommon" . | nindent 6 }}
+      containers:
+        - name: sentinel
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["sh", "-ec"]
+          args:
+            - |
+              until redis-cli --tls --cacert /tls/ca.crt -h "$REDIS_PRIMARY_HOST" -p "$REDIS_PRIMARY_PORT" {{- if .Values.auth.enabled }} -a "$(cat /vault/secrets/redis-password)" --no-auth-warning {{- end }} ping >/dev/null 2>&1; do                echo "waiting for primary $REDIS_PRIMARY_HOST:$REDIS_PRIMARY_PORT"
+                sleep 5
+              done
+              cp /etc/redis-base/sentinel.conf /tmp/sentinel.conf
+              {{- if .Values.auth.enabled }}
+              echo "sentinel auth-pass {{ .Values.sentinel.masterSet }} $(cat /vault/secrets/redis-password)" >> /tmp/sentinel.conf
+              {{- end }}
+              exec redis-sentinel /tmp/sentinel.conf
+          ports:
+            - name: sentinel
+              containerPort: {{ .Values.service.ports.sentinel }}
+          {{- if .Values.auth.enabled }}
+          env:
+            - name: REDIS_PRIMARY_HOST
+              value: {{ include "redis.primaryPodFqdn" . | quote }}
+            - name: REDIS_PRIMARY_PORT
+              value: {{ .Values.service.ports.redis | quote }}
+          {{- else }}
+          env:
+            - name: REDIS_PRIMARY_HOST
+              value: {{ include "redis.primaryPodFqdn" . | quote }}
+            - name: REDIS_PRIMARY_PORT
+              value: {{ .Values.service.ports.redis | quote }}
+          {{- end }}
+          {{- with .Values.sentinel.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          volumeMounts:
+            - name: config
+              mountPath: /etc/redis-base/sentinel.conf
+              subPath: sentinel.conf
+            - name: tls-cert
+              mountPath: /tls
+              readOnly: true
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "redis.configMapName" . }}
+        - name: tls-cert
+          secret:
+            secretName: {{ .Values.tls.existingSecret | default "redis-tls" }}
+  {{- if .Values.sentinel.persistence.enabled }}
+  volumeClaimTemplates:
+    {{- include "redis.volumeClaimTemplate" (dict "root" . "persistence" .Values.sentinel.persistence) | nindent 4 }}
+  {{- end }}
+{{- end }}

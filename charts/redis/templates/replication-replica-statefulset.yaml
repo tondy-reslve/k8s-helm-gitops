@@ -1,0 +1,111 @@
+{{/* SPDX-License-Identifier: Apache-2.0 */}}
+{{- if or (include "redis.isReplication" .) (include "redis.isSentinel" .) }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "redis.replicaStatefulSetName" . }}
+  labels:
+    {{- include "redis.labels" . | nindent 4 }}
+spec:
+  serviceName: {{ include "redis.headlessServiceName" . }}
+  replicas: {{ .Values.replication.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "redis.componentLabels" (dict "root" . "role" "replica") | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "redis.componentLabels" (dict "root" . "role" "replica") | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      {{- include "redis.podSpecCommon" . | nindent 6 }}
+      containers:
+        - name: redis
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["sh", "-ec"]
+          args:
+            - |
+              exec redis-server /etc/redis/redis.conf \
+                --replicaof {{ include "redis.primaryPodFqdn" . }} {{ .Values.service.ports.redis }} \
+              {{- if .Values.auth.enabled }}
+                --masterauth "$(cat /vault/secrets/redis-password)" \
+                --requirepass "$(cat /vault/secrets/redis-password)"
+              {{- end }}
+          ports:
+            - name: redis
+              containerPort: {{ .Values.service.ports.redis }}
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -ec
+                - {{ include "redis.probeCommand" . | quote }}
+            {{- toYaml .Values.livenessProbe | nindent 12 }}
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -ec
+                - {{ include "redis.probeCommand" . | quote }}
+            {{- toYaml .Values.readinessProbe | nindent 12 }}
+          startupProbe:
+            exec:
+              command:
+                - sh
+                - -ec
+                - {{ include "redis.probeCommand" . | quote }}
+            {{- toYaml .Values.startupProbe | nindent 12 }}
+          {{- with .Values.replication.replica.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          volumeMounts:
+            - name: config
+              mountPath: /etc/redis/redis.conf
+              subPath: redis-replica.conf
+            - name: data
+              mountPath: /data
+            - name: tls-cert
+              mountPath: /tls
+              readOnly: true
+        {{- if .Values.metrics.enabled }}
+        - name: metrics
+          image: "{{ .Values.metrics.image.repository }}:{{ .Values.metrics.image.tag }}"
+          imagePullPolicy: {{ .Values.metrics.image.pullPolicy }}
+          env:
+            {{- include "redis.exporterEnv" . | nindent 12 }}
+          ports:
+            - name: metrics
+              containerPort: {{ .Values.service.ports.metrics }}
+          {{- with .Values.metrics.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+        {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "redis.configMapName" . }}
+        - name: tls-cert
+          secret:
+            secretName: {{ .Values.tls.existingSecret | default "redis-tls" }}
+        {{- if not .Values.replication.replica.persistence.enabled }}
+        - name: data
+          emptyDir: {}
+        {{- end }}
+  {{- if .Values.replication.replica.persistence.enabled }}
+  volumeClaimTemplates:
+    {{- include "redis.volumeClaimTemplate" (dict "root" . "persistence" .Values.replication.replica.persistence) | nindent 4 }}
+  {{- end }}
+{{- end }}
