@@ -17,6 +17,9 @@ podAnnotations:
     {{ index .Data.data "redis-password" }}
     {{- end -}}
 
+auth:
+  enabled: true
+
 tls:
   enabled: true
   existingSecret: "redis-crt"
