@@ -22,4 +22,4 @@ spec:
     path: infra/certificates
     helm:
       valueFiles:
-        - values-sit.yaml
+        - sit-cert.yaml

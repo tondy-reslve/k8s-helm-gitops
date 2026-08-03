@@ -22,4 +22,4 @@ spec:
     path: infra/certificates
     helm:
       valueFiles:
-        - values-uat.yaml
+        - uat-cert.yaml
