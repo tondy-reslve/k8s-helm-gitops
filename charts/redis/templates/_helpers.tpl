@@ -278,7 +278,9 @@ app.kubernetes.io/role: {{ .role }}
 Volume claim template.
 */}}
 {{- define "redis.volumeClaimTemplate" -}}
-- metadata:
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
     name: data
     labels:
       {{- include "redis.selectorLabels" .root | nindent 6 }}
