@@ -31,8 +31,8 @@ replication:
   primary:
     persistence:
       storageClass: "longhorn-sit"
-      size: 5Gi
+      size: 2Gi
   replica:
     persistence:
       storageClass: "longhorn-sit"
-      size: 5Gi
+      size: 2Gi
