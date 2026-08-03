@@ -29,10 +29,8 @@ spec:
         - name: redis
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: ["redis-server"]
+          command: ["sh", "-ec"]
           args:
-            - sh
-            - -ec
             - |
               exec redis-server /etc/redis/redis.conf \
               {{- if .Values.auth.enabled }} --requirepass "$(cat /vault/secrets/redis-password)" {{- end }}
