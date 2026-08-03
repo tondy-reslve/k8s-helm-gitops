@@ -1,10 +1,10 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: infra-certificates-sit
+  name: infra-certificates-uat
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "15"
+    argocd.argoproj.io/sync-wave: "16"
 spec:
   project: default
   destination:
