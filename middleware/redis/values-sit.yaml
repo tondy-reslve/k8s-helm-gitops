@@ -30,9 +30,9 @@ tls:
 replication:
   primary:
     persistence:
-      storageClass: "longhorn"
+      storageClass: "longhorn-sit"
       size: 5Gi
   replica:
     persistence:
-      storageClass: "longhorn"
+      storageClass: "longhorn-sit"
       size: 5Gi
