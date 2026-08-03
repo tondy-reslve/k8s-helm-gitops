@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: infra-certificates-sit
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "15"
+spec:
+  project: default
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: default 
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - ServerSideApply=true
+  source:
+    repoURL: 'https://github.com/tondy-reslve/k8s-helm-gitops.git'
+    targetRevision: HEAD
+    path: infra/certificates
+    helm:
+      valueFiles:
+        - values-uat.yaml
