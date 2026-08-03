@@ -2,7 +2,7 @@ architecture: sentinel
 
 image:
   repository: docker.io/library/redis
-  tag: "7.4.9"
+  tag: "6.2.23"
   pullPolicy: IfNotPresent
 
 podAnnotations:
