@@ -32,8 +32,11 @@ spec:
           command: ["sh", "-ec"]
           args:
             - |
-              exec redis-server /etc/redis/redis.conf \
-              {{- if .Values.auth.enabled }} --requirepass "$(cat /vault/secrets/redis-password)" {{- end }}
+              {{- if .Values.auth.enabled }}
+              exec redis-server /etc/redis/redis.conf --requirepass "$(cat /vault/secrets/redis-password)"
+              {{- else }}
+              exec redis-server /etc/redis/redis.conf
+              {{- end }}
           ports:
             - name: redis
               containerPort: {{ .Values.service.ports.redis }}

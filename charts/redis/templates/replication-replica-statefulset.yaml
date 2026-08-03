@@ -32,11 +32,10 @@ spec:
           command: ["sh", "-ec"]
           args:
             - |
-              exec redis-server /etc/redis/redis.conf \
-                --replicaof {{ include "redis.primaryPodFqdn" . }} {{ .Values.service.ports.redis }} \
               {{- if .Values.auth.enabled }}
-                --masterauth "$(cat /vault/secrets/redis-password)" \
-                --requirepass "$(cat /vault/secrets/redis-password)"
+              exec redis-server /etc/redis/redis.conf --replicaof {{ include "redis.primaryPodFqdn" . }} {{ .Values.service.ports.redis }} --masterauth "$(cat /vault/secrets/redis-password)" --requirepass "$(cat /vault/secrets/redis-password)"
+              {{- else }}
+              exec redis-server /etc/redis/redis.conf --replicaof {{ include "redis.primaryPodFqdn" . }} {{ .Values.service.ports.redis }}
               {{- end }}
           ports:
             - name: redis
