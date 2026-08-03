@@ -39,6 +39,12 @@ data:
     sentinel down-after-milliseconds {{ .Values.sentinel.masterSet }} {{ .Values.sentinel.downAfterMilliseconds }}
     sentinel failover-timeout {{ .Values.sentinel.masterSet }} {{ .Values.sentinel.failoverTimeout }}
     sentinel parallel-syncs {{ .Values.sentinel.masterSet }} {{ .Values.sentinel.parallelSyncs }}
+    {{- if .Values.tls.enabled }}
+    tls-replication yes
+    tls-cert-file /tls/{{ .Values.tls.certFilename }}
+    tls-key-file /tls/{{ .Values.tls.keyFilename }}
+    tls-ca-cert-file /tls/{{ .Values.tls.caFilename }}
+    {{- end }}
     {{- with .Values.config.sentinel }}
     {{ . | nindent 4 }}
     {{- end }}

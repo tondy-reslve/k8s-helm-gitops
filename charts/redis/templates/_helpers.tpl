@@ -216,6 +216,7 @@ tls-cert-file /tls/{{ .Values.tls.certFilename }}
 tls-key-file /tls/{{ .Values.tls.keyFilename }}
 tls-ca-cert-file /tls/{{ .Values.tls.caFilename }}
 tls-auth-clients no
+tls-replication yes
 {{- end }}
 {{- end -}}
 
