@@ -29,6 +29,11 @@ spec:
         - name: redis
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
           command: ["sh", "-ec"]
           args:
             - |
@@ -40,16 +45,16 @@ spec:
               if [ -z "$MASTER_IP" ] || [ "$MASTER_IP" = "127.0.0.1" ]; then
                 echo "2. 警告：找不到 Master！預設回退跟隨 primary-0"
                 {{- if .Values.auth.enabled }}
-                exec redis-server /etc/redis/redis.conf --replicaof {{ include "redis.primaryPodFqdn" . }} {{ .Values.service.ports.redis }} --masterauth "$(cat /vault/secrets/redis-password)" --requirepass "$(cat /vault/secrets/redis-password)"
+                exec redis-server /etc/redis/redis.conf --replicaof {{ include "redis.primaryPodFqdn" . }} {{ .Values.service.ports.redis }} --replica-announce-ip $POD_IP --replica-announce-port {{ .Values.service.ports.redis }} --masterauth "$(cat /vault/secrets/redis-password)" --requirepass "$(cat /vault/secrets/redis-password)"
                 {{- else }}
-                exec redis-server /etc/redis/redis.conf --replicaof {{ include "redis.primaryPodFqdn" . }} {{ .Values.service.ports.redis }}
+                exec redis-server /etc/redis/redis.conf --replicaof {{ include "redis.primaryPodFqdn" . }} {{ .Values.service.ports.redis }} --replica-announce-ip $POD_IP --replica-announce-port {{ .Values.service.ports.redis }}
                 {{- end }}
               else
                 echo "2. 發現現任 Master 為 $MASTER_IP:$MASTER_PORT，開始跟隨！"
                 {{- if .Values.auth.enabled }}
-                exec redis-server /etc/redis/redis.conf --replicaof $MASTER_IP $MASTER_PORT --masterauth "$(cat /vault/secrets/redis-password)" --requirepass "$(cat /vault/secrets/redis-password)"
+                exec redis-server /etc/redis/redis.conf --replicaof $MASTER_IP $MASTER_PORT --replica-announce-ip $POD_IP --replica-announce-port {{ .Values.service.ports.redis }} --masterauth "$(cat /vault/secrets/redis-password)" --requirepass "$(cat /vault/secrets/redis-password)"
                 {{- else }}
-                exec redis-server /etc/redis/redis.conf --replicaof $MASTER_IP $MASTER_PORT
+                exec redis-server /etc/redis/redis.conf --replicaof $MASTER_IP $MASTER_PORT --replica-announce-ip $POD_IP --replica-announce-port {{ .Values.service.ports.redis }}
                 {{- end }}
               fi
           ports:
