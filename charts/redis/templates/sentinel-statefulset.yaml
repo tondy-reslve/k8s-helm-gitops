@@ -40,7 +40,6 @@ spec:
                 PASSWORD_ARG="-a $REDIS_PASS --no-auth-warning"
               fi
               
-              # 動態產生所有 Pod 的 FQDN 名單
               HOSTS="{{ include "redis.primaryPodFqdn" . }}"
               {{- $replicaCount := int .Values.replication.replicaCount }}
               {{- $domain := include "redis.headlessServiceFqdn" . }}
@@ -66,7 +65,7 @@ spec:
                 MONITOR_HOST="$REDIS_PRIMARY_HOST"
               fi
               
-              # 🚨 關鍵：將 Hostname 解析為真實 IP，避免 K8s DNS 被刪除時卡死 Sentinel
+              # 🚨 關鍵修復：把 Hostname 翻譯成真實 IP，解開 Sentinel 的封印
               MONITOR_IP=$(getent hosts "$MONITOR_HOST" | awk '{ print $1 }' | head -n 1)
               MONITOR_IP=${MONITOR_IP:-$MONITOR_HOST}
               echo "Sentinel will monitor master at IP: $MONITOR_IP"
@@ -74,7 +73,7 @@ spec:
               cp /etc/redis-base/sentinel.conf /tmp/sentinel.conf
               sed -i '/sentinel monitor/d' /tmp/sentinel.conf
               
-              # 🚨 這裡寫入的是 $MONITOR_IP 而不是 $MONITOR_HOST
+              # 🚨 寫入 IP 而不是 Hostname
               echo "sentinel monitor {{ .Values.sentinel.masterSet }} $MONITOR_IP {{ .Values.service.ports.redis }} {{ .Values.sentinel.quorum }}" >> /tmp/sentinel.conf
               
               {{- if .Values.auth.enabled }}
