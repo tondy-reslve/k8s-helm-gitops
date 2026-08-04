@@ -41,21 +41,29 @@ spec:
               command:
                 - sh
                 - -ec
-                - 'test -f /vault/secrets/redis-password && export REDIS_PASSWORD=$(cat /vault/secrets/redis-password | tr -d "\n\r") && {{ include "redis.probeCommand" . }}'
+                - |
+                  if [ -f /vault/secrets/redis-password ]; then
+                    export REDIS_PASSWORD=$(cat /vault/secrets/redis-password | tr -d '\n\r')
+                  fi
+                  {{ include "redis.probeCommand" . }}
             {{- toYaml .Values.livenessProbe | nindent 12 }}
           readinessProbe:
             exec:
               command:
                 - sh
                 - -ec
-                - 'export REDIS_PASSWORD=$(cat /vault/secrets/redis-password | tr -d "\n\r") && {{ include "redis.probeCommand" . }}'
+                - |
+                  export REDIS_PASSWORD=$(cat /vault/secrets/redis-password | tr -d '\n\r')
+                  {{ include "redis.probeCommand" . }}
             {{- toYaml .Values.readinessProbe | nindent 12 }}
           startupProbe:
             exec:
               command:
                 - sh
                 - -ec
-                - 'export REDIS_PASSWORD=$(cat /vault/secrets/redis-password | tr -d "\n\r") && {{ include "redis.probeCommand" . }}'
+                - |
+                  export REDIS_PASSWORD=$(cat /vault/secrets/redis-password | tr -d '\n\r')
+                  {{ include "redis.probeCommand" . }}
             {{- toYaml .Values.startupProbe | nindent 12 }}
           {{- with .Values.replication.primary.resources }}
           resources:
