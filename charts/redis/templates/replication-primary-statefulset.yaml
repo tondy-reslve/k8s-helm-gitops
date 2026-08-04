@@ -32,12 +32,7 @@ spec:
           command: ["sh", "-ec"]
           args:
             - |
-              {{- if .Values.auth.enabled }}
-              export REDIS_PASS=$(cat /vault/secrets/redis-password | tr -d '\n\r')
-              exec redis-server /etc/redis/redis.conf --requirepass "$REDIS_PASS"
-              {{- else }}
-              exec redis-server /etc/redis/redis.conf
-              {{- end }}
+              exec redis-server /etc/redis/redis.conf {{- if .Values.auth.enabled }} --requirepass "$(cat /vault/secrets/redis-password | tr -d '\n\r')" {{- end }}
           ports:
             - name: redis
               containerPort: {{ .Values.service.ports.redis }}
@@ -46,21 +41,21 @@ spec:
               command:
                 - sh
                 - -ec
-                - {{ include "redis.probeCommand" . | quote }}
+                - 'test -f /vault/secrets/redis-password && export REDIS_PASSWORD=$(cat /vault/secrets/redis-password | tr -d "\n\r") && {{ include "redis.probeCommand" . }}'
             {{- toYaml .Values.livenessProbe | nindent 12 }}
           readinessProbe:
             exec:
               command:
                 - sh
                 - -ec
-                - {{ include "redis.probeCommand" . | quote }}
+                - 'export REDIS_PASSWORD=$(cat /vault/secrets/redis-password | tr -d "\n\r") && {{ include "redis.probeCommand" . }}'
             {{- toYaml .Values.readinessProbe | nindent 12 }}
           startupProbe:
             exec:
               command:
                 - sh
                 - -ec
-                - {{ include "redis.probeCommand" . | quote }}
+                - 'export REDIS_PASSWORD=$(cat /vault/secrets/redis-password | tr -d "\n\r") && {{ include "redis.probeCommand" . }}'
             {{- toYaml .Values.startupProbe | nindent 12 }}
           {{- with .Values.replication.primary.resources }}
           resources:

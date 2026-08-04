@@ -40,6 +40,7 @@ spec:
                 PASSWORD_ARG="-a $REDIS_PASS --no-auth-warning"
               fi
               
+              # 動態產生所有 Pod 的 FQDN 名單
               HOSTS="{{ include "redis.primaryPodFqdn" . }}"
               {{- $replicaCount := int .Values.replication.replicaCount }}
               {{- $domain := include "redis.headlessServiceFqdn" . }}
@@ -65,18 +66,15 @@ spec:
                 MONITOR_HOST="$REDIS_PRIMARY_HOST"
               fi
               
-              echo "Resolving IP for $MONITOR_HOST..."
-              MONITOR_IP=$(getent hosts $MONITOR_HOST | awk '{ print $1 }' | head -n 1)
-              if [ -z "$MONITOR_IP" ]; then
-                echo "Warning: Could not resolve IP, fallback to hostname"
-                MONITOR_IP=$MONITOR_HOST
-              fi
-
+              # 🚨 關鍵：將 Hostname 解析為真實 IP，避免 K8s DNS 被刪除時卡死 Sentinel
+              MONITOR_IP=$(getent hosts "$MONITOR_HOST" | awk '{ print $1 }' | head -n 1)
+              MONITOR_IP=${MONITOR_IP:-$MONITOR_HOST}
               echo "Sentinel will monitor master at IP: $MONITOR_IP"
 
               cp /etc/redis-base/sentinel.conf /tmp/sentinel.conf
               sed -i '/sentinel monitor/d' /tmp/sentinel.conf
               
+              # 🚨 這裡寫入的是 $MONITOR_IP 而不是 $MONITOR_HOST
               echo "sentinel monitor {{ .Values.sentinel.masterSet }} $MONITOR_IP {{ .Values.service.ports.redis }} {{ .Values.sentinel.quorum }}" >> /tmp/sentinel.conf
               
               {{- if .Values.auth.enabled }}
@@ -88,19 +86,11 @@ spec:
           ports:
             - name: sentinel
               containerPort: {{ .Values.service.ports.sentinel }}
-          {{- if .Values.auth.enabled }}
           env:
             - name: REDIS_PRIMARY_HOST
               value: {{ include "redis.primaryPodFqdn" . | quote }}
             - name: REDIS_PRIMARY_PORT
               value: {{ .Values.service.ports.redis | quote }}
-          {{- else }}
-          env:
-            - name: REDIS_PRIMARY_HOST
-              value: {{ include "redis.primaryPodFqdn" . | quote }}
-            - name: REDIS_PRIMARY_PORT
-              value: {{ .Values.service.ports.redis | quote }}
-          {{- end }}
           {{- with .Values.sentinel.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
