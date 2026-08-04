@@ -34,13 +34,47 @@ spec:
           command: ["sh", "-ec"]
           args:
             - |
-              until redis-cli --tls --cacert /tls/ca.crt -h "$REDIS_PRIMARY_HOST" -p "$REDIS_PRIMARY_PORT" {{- if .Values.auth.enabled }} -a "$(cat /vault/secrets/redis-password)" --no-auth-warning {{- end }} ping >/dev/null 2>&1; do                echo "waiting for primary $REDIS_PRIMARY_HOST:$REDIS_PRIMARY_PORT"
-                sleep 5
-              done
-              cp /etc/redis-base/sentinel.conf /tmp/sentinel.conf
-              {{- if .Values.auth.enabled }}
-              echo "sentinel auth-pass {{ .Values.sentinel.masterSet }} $(cat /vault/secrets/redis-password)" >> /tmp/sentinel.conf
+              export REDIS_PASS=$(cat /vault/secrets/redis-password | tr -d '\n\r')
+              PASSWORD_ARG=""
+              if [ -n "$REDIS_PASS" ]; then
+                PASSWORD_ARG="-a $REDIS_PASS --no-auth-warning"
+              fi
+              
+              HOSTS="{{ include "redis.primaryPodFqdn" . }}"
+              {{- $replicaCount := int .Values.replication.replicaCount }}
+              {{- $domain := include "redis.headlessServiceFqdn" . }}
+              {{- $replicaName := include "redis.replicaStatefulSetName" . }}
+              {{- range $i := until $replicaCount }}
+              HOSTS="$HOSTS {{ $replicaName }}-{{ $i }}.{{ $domain }}"
               {{- end }}
+              
+              ACTIVE_MASTER=""
+              for host in $HOSTS; do
+                echo "Checking role of $host..."
+                ROLE=$(redis-cli --tls --cacert /tls/{{ .Values.tls.caFilename }} -h "$host" -p {{ .Values.service.ports.redis }} $PASSWORD_ARG info replication 2>/dev/null | grep role | cut -d: -f2 | tr -d '\r\n')
+                if [ "$ROLE" = "master" ]; then
+                  echo "Found active master: $host"
+                  ACTIVE_MASTER="$host"
+                  break
+                fi
+              done
+
+              if [ -n "$ACTIVE_MASTER" ]; then
+                MONITOR_HOST="$ACTIVE_MASTER"
+              else
+                MONITOR_HOST="$REDIS_PRIMARY_HOST"
+              fi
+              echo "Sentinel will monitor master at: $MONITOR_HOST"
+
+              cp /etc/redis-base/sentinel.conf /tmp/sentinel.conf
+              sed -i '/sentinel monitor/d' /tmp/sentinel.conf
+              echo "sentinel monitor {{ .Values.sentinel.masterSet }} $MONITOR_HOST {{ .Values.service.ports.redis }} {{ .Values.sentinel.quorum }}" >> /tmp/sentinel.conf
+              
+              {{- if .Values.auth.enabled }}
+              sed -i '/sentinel auth-pass/d' /tmp/sentinel.conf
+              echo "sentinel auth-pass {{ .Values.sentinel.masterSet }} $REDIS_PASS" >> /tmp/sentinel.conf
+              {{- end }}
+
               exec redis-sentinel /tmp/sentinel.conf
           ports:
             - name: sentinel

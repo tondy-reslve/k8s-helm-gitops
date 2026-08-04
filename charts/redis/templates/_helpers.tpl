@@ -239,7 +239,7 @@ Probe command.
 */}}
 {{- define "redis.probeCommand" -}}
 {{- if .Values.auth.enabled -}}
-export REDIS_PASSWORD=$(cat /vault/secrets/redis-password) && redis-cli --tls --cacert /tls/ca.crt -a "$REDIS_PASSWORD" ping
+export REDIS_PASSWORD=$(cat /vault/secrets/redis-password | tr -d '\n\r') && redis-cli --tls --cacert /tls/ca.crt -a "$REDIS_PASSWORD" ping
 {{- else -}}
 redis-cli ping
 {{- end -}}
