@@ -13,12 +13,16 @@ data:
     {{- end }}
   redis-primary.conf: |
     {{- include "redis.commonConfig" . | nindent 4 }}
+    replica-announce-ip $(POD_IP)
+    replica-announce-port 6379
     {{- with .Values.config.redis }}
     {{ . | nindent 4 }}
     {{- end }}
   redis-replica.conf: |
     {{- include "redis.commonConfig" . | nindent 4 }}
     replica-read-only yes
+    replica-announce-ip $(POD_IP)
+    replica-announce-port 6379
     {{- with .Values.config.redis }}
     {{ . | nindent 4 }}
     {{- end }}
