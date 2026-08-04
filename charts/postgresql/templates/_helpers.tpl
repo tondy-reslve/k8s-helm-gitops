@@ -540,7 +540,9 @@ limits:
 {{- end -}}
 
 {{- define "postgresql.volumeClaimTemplate" -}}
-- metadata:
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
     name: data
     labels:
       {{- include "postgresql.selectorLabels" .root | nindent 6 }}
