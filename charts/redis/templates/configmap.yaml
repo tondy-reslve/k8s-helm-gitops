@@ -32,11 +32,11 @@ data:
     {{ . | nindent 4 }}
     {{- end }}
   sentinel.conf: |
-    port {{ .Values.service.ports.sentinel }}
+    port 0
+    tls-port {{ .Values.service.ports.sentinel }}
     dir /tmp
     protected-mode no
     sentinel resolve-hostnames yes
-    sentinel monitor {{ .Values.sentinel.masterSet }} {{ include "redis.primaryPodFqdn" . }} {{ .Values.service.ports.redis }} {{ .Values.sentinel.quorum }}
     sentinel down-after-milliseconds {{ .Values.sentinel.masterSet }} {{ .Values.sentinel.downAfterMilliseconds }}
     sentinel failover-timeout {{ .Values.sentinel.masterSet }} {{ .Values.sentinel.failoverTimeout }}
     sentinel parallel-syncs {{ .Values.sentinel.masterSet }} {{ .Values.sentinel.parallelSyncs }}
@@ -45,6 +45,7 @@ data:
     tls-cert-file /tls/{{ .Values.tls.certFilename }}
     tls-key-file /tls/{{ .Values.tls.keyFilename }}
     tls-ca-cert-file /tls/{{ .Values.tls.caFilename }}
+    tls-auth-clients no
     {{- end }}
     {{- with .Values.config.sentinel }}
     {{ . | nindent 4 }}

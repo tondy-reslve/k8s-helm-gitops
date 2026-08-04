@@ -50,10 +50,8 @@ spec:
               
               ACTIVE_MASTER=""
               for host in $HOSTS; do
-                echo "Checking role of $host..."
                 ROLE=$(redis-cli --tls --cacert /tls/{{ .Values.tls.caFilename }} -h "$host" -p {{ .Values.service.ports.redis }} $PASSWORD_ARG info replication 2>/dev/null | grep role | cut -d: -f2 | tr -d '\r\n')
                 if [ "$ROLE" = "master" ]; then
-                  echo "Found active master: $host"
                   ACTIVE_MASTER="$host"
                   break
                 fi
@@ -65,19 +63,16 @@ spec:
                 MONITOR_HOST="$REDIS_PRIMARY_HOST"
               fi
               
-              # 🚨 關鍵修復：把 Hostname 翻譯成真實 IP，解開 Sentinel 的封印
               MONITOR_IP=$(getent hosts "$MONITOR_HOST" | awk '{ print $1 }' | head -n 1)
               MONITOR_IP=${MONITOR_IP:-$MONITOR_HOST}
-              echo "Sentinel will monitor master at IP: $MONITOR_IP"
-
-              cp /etc/redis-base/sentinel.conf /tmp/sentinel.conf
-              sed -i '/sentinel monitor/d' /tmp/sentinel.conf
               
-              # 🚨 寫入 IP 而不是 Hostname
+              cp /etc/redis-base/sentinel.conf /tmp/sentinel.conf
+              
+              # 🚨 寫入真正的 Master IP，並強制宣告自己的 POD_IP
               echo "sentinel monitor {{ .Values.sentinel.masterSet }} $MONITOR_IP {{ .Values.service.ports.redis }} {{ .Values.sentinel.quorum }}" >> /tmp/sentinel.conf
+              echo "sentinel announce-ip $POD_IP" >> /tmp/sentinel.conf
               
               {{- if .Values.auth.enabled }}
-              sed -i '/sentinel auth-pass/d' /tmp/sentinel.conf
               echo "sentinel auth-pass {{ .Values.sentinel.masterSet }} $REDIS_PASS" >> /tmp/sentinel.conf
               {{- end }}
 
@@ -90,6 +85,10 @@ spec:
               value: {{ include "redis.primaryPodFqdn" . | quote }}
             - name: REDIS_PRIMARY_PORT
               value: {{ .Values.service.ports.redis | quote }}
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
           {{- with .Values.sentinel.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
