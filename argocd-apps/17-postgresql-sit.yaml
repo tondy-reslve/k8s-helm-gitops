@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: postgresql-sit
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "17"
+spec:
+  project: default
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: my-app-sit
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+  source:
+    repoURL: 'https://github.com/tondy-reslve/k8s-helm-gitops.git'
+    targetRevision: HEAD
+    path: charts/postgresql
+    helm:
+      valueFiles:
+        - ../../middleware/postgresql/values-sit.yaml

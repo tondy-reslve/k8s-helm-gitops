@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: Apache-2.0
+# CI scenario: replication with NetworkPolicy. TLS rendering is covered by unit
+# tests because runtime TLS requires an existing Secret fixture.
+architecture: replication
+
+networkPolicy:
+  enabled: true
+
+replication:
+  primary:
+    persistence:
+      enabled: false
+  readReplicas:
+    replicaCount: 2
+    persistence:
+      enabled: false

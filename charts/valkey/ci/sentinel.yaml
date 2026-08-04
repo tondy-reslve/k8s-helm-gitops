@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: Apache-2.0
+architecture: sentinel
+
+auth:
+  enabled: true
+  password: ci-valkey-password
+
+node:
+  replicaCount: 2
+
+sentinel:
+  replicaCount: 3
+  masterSet: ci-master
+  quorum: 2
+
+pdb:
+  enabled: true

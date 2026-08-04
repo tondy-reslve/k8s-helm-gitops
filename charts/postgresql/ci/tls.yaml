@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: Apache-2.0
+# CI scenario: standalone without persistence. TLS rendering is covered by unit
+# tests because runtime TLS requires an existing Secret fixture.
+
+standalone:
+  persistence:
+    enabled: false

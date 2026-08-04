@@ -1,0 +1,133 @@
+{{/* SPDX-License-Identifier: Apache-2.0 */}}
+{{- if include "valkey.isSentinel" . }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "valkey.sentinelStatefulSetName" . }}
+  labels:
+    {{- include "valkey.labels" . | nindent 4 }}
+  {{- include "valkey.renderAnnotations" (dict "root" .) | nindent 2 }}
+spec:
+  serviceName: {{ include "valkey.sentinelServiceName" . }}
+  replicas: {{ .Values.sentinel.replicaCount }}
+  {{- with .Values.sentinel.podManagementPolicy }}
+  podManagementPolicy: {{ . }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "valkey.sentinelLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "valkey.sentinelLabels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- if .Values.auth.enabled }}
+        checksum/auth-secret: {{ include "valkey.authChecksum" . }}
+        {{- end }}
+        {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- include "valkey.podSpec" (dict "root" . "role" "sentinel") | nindent 6 }}
+      containers:
+        - name: sentinel
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["sh", "/scripts/sentinel-entrypoint.sh"]
+          ports:
+            - name: sentinel
+              containerPort: {{ .Values.service.ports.sentinel }}
+          env:
+            {{- if .Values.auth.enabled }}
+            - name: VALKEY_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "valkey.secretName" . }}
+                  key: {{ .Values.auth.existingSecretPasswordKey }}
+            {{- end }}
+            {{- if and .Values.auth.enabled .Values.auth.sentinel }}
+            - name: VALKEYCLI_AUTH
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "valkey.secretName" . }}
+                  key: {{ .Values.auth.existingSecretPasswordKey }}
+            {{- end }}
+            {{- with .Values.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -ec
+                - {{ include "valkey.sentinelProbeCommand" . | quote }}
+            {{- toYaml .Values.livenessProbe | nindent 12 }}
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -ec
+                - {{ include "valkey.sentinelReadyCommand" . | quote }}
+            {{- toYaml .Values.readinessProbe | nindent 12 }}
+          startupProbe:
+            exec:
+              command:
+                - sh
+                - -ec
+                - {{ include "valkey.sentinelProbeCommand" . | quote }}
+            {{- toYaml .Values.startupProbe | nindent 12 }}
+          {{- with .Values.sentinel.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          volumeMounts:
+            - name: config
+              mountPath: /etc/valkey-base/sentinel.conf
+              subPath: sentinel.conf
+            - name: scripts
+              mountPath: /scripts
+              readOnly: true
+            - name: data
+              mountPath: /data
+            {{- if .Values.tls.enabled }}
+            - name: tls
+              mountPath: /tls
+              readOnly: true
+            {{- end }}
+            {{- with .Values.extraVolumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "valkey.configMapName" . }}
+        - name: scripts
+          configMap:
+            name: {{ include "valkey.configMapName" . }}
+            defaultMode: 0555
+            items:
+              - key: sentinel-entrypoint.sh
+                path: sentinel-entrypoint.sh
+        {{- if not .Values.sentinel.persistence.enabled }}
+        - name: data
+          emptyDir: {}
+        {{- end }}
+        {{- if .Values.tls.enabled }}
+        - name: tls
+          secret:
+            secretName: {{ .Values.tls.existingSecret }}
+        {{- end }}
+        {{- with .Values.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+  {{- if .Values.sentinel.persistence.enabled }}
+  volumeClaimTemplates:
+    {{- include "valkey.volumeClaimTemplate" (dict "root" . "persistence" .Values.sentinel.persistence) | nindent 4 }}
+  {{- end }}
+{{- end }}

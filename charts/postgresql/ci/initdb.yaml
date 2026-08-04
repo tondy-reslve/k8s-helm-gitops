@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: Apache-2.0
+initdb:
+  scripts:
+    10-extensions.sql: |
+      CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+standalone:
+  persistence:
+    enabled: false
