@@ -64,11 +64,20 @@ spec:
               else
                 MONITOR_HOST="$REDIS_PRIMARY_HOST"
               fi
-              echo "Sentinel will monitor master at: $MONITOR_HOST"
+              
+              echo "Resolving IP for $MONITOR_HOST..."
+              MONITOR_IP=$(getent hosts $MONITOR_HOST | awk '{ print $1 }' | head -n 1)
+              if [ -z "$MONITOR_IP" ]; then
+                echo "Warning: Could not resolve IP, fallback to hostname"
+                MONITOR_IP=$MONITOR_HOST
+              fi
+
+              echo "Sentinel will monitor master at IP: $MONITOR_IP"
 
               cp /etc/redis-base/sentinel.conf /tmp/sentinel.conf
               sed -i '/sentinel monitor/d' /tmp/sentinel.conf
-              echo "sentinel monitor {{ .Values.sentinel.masterSet }} $MONITOR_HOST {{ .Values.service.ports.redis }} {{ .Values.sentinel.quorum }}" >> /tmp/sentinel.conf
+              
+              echo "sentinel monitor {{ .Values.sentinel.masterSet }} $MONITOR_IP {{ .Values.service.ports.redis }} {{ .Values.sentinel.quorum }}" >> /tmp/sentinel.conf
               
               {{- if .Values.auth.enabled }}
               sed -i '/sentinel auth-pass/d' /tmp/sentinel.conf
