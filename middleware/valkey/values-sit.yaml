@@ -97,15 +97,3 @@ sentinel:
 pdb:
   # -- Render PodDisruptionBudget resources for supported topologies
   enabled: true
-
-# =============================================================================
-# Metrics
-# =============================================================================
-
-metrics:
-  # -- Enable Prometheus metrics exporter sidecar
-  enabled: true
-  serviceMonitor:
-    enabled: true
-    labels:
-      release: prometheus
