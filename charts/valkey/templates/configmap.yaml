@@ -74,6 +74,7 @@ data:
     if [ -f /vault/secrets/valkey-password ]; then
       export VALKEY_PASSWORD="$(cat /vault/secrets/valkey-password | tr -d '\n\r')"
       export VALKEYCLI_AUTH="$VALKEY_PASSWORD"
+      export REDISCLI_AUTH="$VALKEY_PASSWORD"
     fi
 
     MODE="${1:-run}"
@@ -262,6 +263,8 @@ data:
 
     if [ -f /vault/secrets/valkey-password ]; then
       export VALKEY_PASSWORD="$(cat /vault/secrets/valkey-password | tr -d '\n\r')"
+      export VALKEYCLI_AUTH="$VALKEY_PASSWORD"
+      export REDISCLI_AUTH="$VALKEY_PASSWORD"
     fi
 
     VALKEY_PORT={{ .Values.service.ports.valkey }}
@@ -312,6 +315,8 @@ data:
 
     if [ -f /vault/secrets/valkey-password ]; then
       export VALKEY_PASSWORD="$(cat /vault/secrets/valkey-password | tr -d '\n\r')"
+      export VALKEYCLI_AUTH="$VALKEY_PASSWORD"
+      export REDISCLI_AUTH="$VALKEY_PASSWORD"
     fi
 
     VALKEY_PORT={{ .Values.service.ports.valkey }}
