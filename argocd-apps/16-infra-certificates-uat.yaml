@@ -6,10 +6,10 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "16"
 spec:
-  project: default
+  project: uat-project
   destination:
     server: 'https://kubernetes.default.svc'
-    namespace: default 
+    namespace: my-app-uat
   syncPolicy:
     automated:
       prune: true
