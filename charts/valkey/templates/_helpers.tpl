@@ -413,7 +413,9 @@ app.kubernetes.io/component: metrics
 Volume claim template.
 */}}
 {{- define "valkey.volumeClaimTemplate" -}}
-- metadata:
+- apiVersion: v1	
+  kind: PersistentVolumeClaim
+  metadata:
     name: data
     labels:
       {{- include "valkey.selectorLabels" .root | nindent 6 }}

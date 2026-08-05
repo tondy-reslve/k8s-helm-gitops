@@ -97,3 +97,6 @@ sentinel:
 pdb:
   # -- Render PodDisruptionBudget resources for supported topologies
   enabled: true
+
+# -- Mount Kubernetes API service account token into pods.
+automountServiceAccountToken: true
