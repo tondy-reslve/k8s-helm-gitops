@@ -1,0 +1,11 @@
+certificates:
+  valkey-crt:
+    namespace: my-app-uat
+    vaultRole: valkey-uat-role
+    dnsNames:
+    - "valkey-uat.my-app-uat.svc"
+    - "valkey-uat.my-app-uat.svc.cluster.local"
+    - "*.valkey-uat-headless.my-app-uat.svc.cluster.local"
+    - "valkey-uat-sentinel.my-app-uat.svc.cluster.local"
+    - "*.valkey-uat-sentinel.my-app-uat.svc.cluster.local"
+    - "localhost"
