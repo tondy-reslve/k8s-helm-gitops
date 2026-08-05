@@ -6,7 +6,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "21"
 spec:
-  project: default
+  project: sit-project
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: my-app-sit
