@@ -9,7 +9,7 @@ spec:
   project: sit-project
   destination:
     server: 'https://kubernetes.default.svc'
-    namespace: default 
+    namespace: my-app-sit 
   syncPolicy:
     automated:
       prune: true
