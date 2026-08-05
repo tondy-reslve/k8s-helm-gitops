@@ -1,0 +1,111 @@
+# SPDX-License-Identifier: Apache-2.0
+# =============================================================================
+# Valkey Helm Chart - Default Values
+# =============================================================================
+# Supported architectures:
+# - standalone
+# - replication
+# - sentinel
+# - cluster
+
+# -- Valkey topology to deploy: standalone | replication | sentinel | cluster
+architecture: sentinel
+
+# -- Override full release name
+fullnameOverride: "valkey-sit"
+
+# =============================================================================
+# Image
+# =============================================================================
+
+image:
+  # -- Container image repository
+  repository: docker.io/valkey/valkey
+  # -- Container image tag
+  tag: "9.1.1"
+  # -- Image pull policy
+  pullPolicy: IfNotPresent
+
+# =============================================================================
+# Vault Agent Injector Annotations
+# =============================================================================
+
+podAnnotations:
+  vault.hashicorp.com/agent-inject: "true"
+  vault.hashicorp.com/role: "my-app-sit-role"
+  vault.hashicorp.com/tls-skip-verify: "true"
+  vault.hashicorp.com/namespace: "admin"
+  
+  vault.hashicorp.com/agent-inject-secret-valkey-password: "secret/data/sit/valkey"
+  vault.hashicorp.com/agent-inject-template-valkey-password: |
+    {{- with secret "secret/data/sit/valkey" -}}
+    {{ index .Data.data "valkey-password" }}
+    {{- end -}}
+
+# =============================================================================
+# Authentication
+# =============================================================================
+
+auth:
+  # -- Enable password authentication on Valkey
+  enabled: true
+  # -- Enable password authentication on the Sentinel control plane
+  sentinel: true
+
+# =============================================================================
+# TLS
+# =============================================================================
+
+tls:
+  # -- Enable TLS. Requires tls.existingSecret.
+  enabled: true
+  # -- Existing secret with tls.crt, tls.key and ca.crt
+  existingSecret: "valkey-crt"
+  # -- Certificate filename mounted from tls.existingSecret
+  certFilename: tls.crt
+  # -- Private key filename mounted from tls.existingSecret
+  keyFilename: tls.key
+  # -- CA certificate filename mounted from tls.existingSecret
+  caFilename: ca.crt
+
+# =============================================================================
+# Sentinel data nodes
+# =============================================================================
+
+node:
+  # -- Number of Valkey data nodes in sentinel mode
+  replicaCount: 3
+  persistence:
+    # -- Enable persistent storage for sentinel data nodes
+    enabled: true
+    # -- StorageClass for node PVCs. Empty uses the cluster default.
+    storageClass: "longhorn-sit"
+    # -- Access modes for node PVCs
+    accessModes:
+      - ReadWriteOnce
+    # -- Size of each node PVC
+    size: 2Gi
+
+# =============================================================================
+# Sentinel
+# =============================================================================
+
+sentinel:
+  replicaCount: 3
+  quorum: 2
+
+pdb:
+  # -- Render PodDisruptionBudget resources for supported topologies
+  enabled: true
+
+# =============================================================================
+# Metrics
+# =============================================================================
+
+metrics:
+  # -- Enable Prometheus metrics exporter sidecar
+  enabled: true
+  serviceMonitor:
+    enabled: true
+    labels:
+      release: prometheus

@@ -367,11 +367,8 @@ Exporter environment.
 {{- if .Values.auth.enabled }}
 - name: REDIS_USER
   value: default
-- name: REDIS_PASSWORD
-  valueFrom:
-    secretKeyRef:
-      name: {{ include "valkey.secretName" . }}
-      key: {{ .Values.auth.existingSecretPasswordKey }}
+- name: REDIS_PASSWORD_FILE
+  value: /vault/secrets/valkey-password
 {{- end }}
 {{- end -}}
 
@@ -490,13 +487,13 @@ Probe commands for sentinel-mode pods. Auth flows through the VALKEYCLI_AUTH
 environment variable set on the container, never through argv.
 */}}
 {{- define "valkey.nodeProbeCommand" -}}
-valkey-cli {{ include "valkey.probeTlsArgs" . }} -p {{ .Values.service.ports.valkey }} ping
+export VALKEYCLI_AUTH=$(cat /vault/secrets/valkey-password | tr -d '\n\r') && valkey-cli {{ include "valkey.probeTlsArgs" . }} -p {{ .Values.service.ports.valkey }} ping
 {{- end -}}
 
 {{- define "valkey.sentinelProbeCommand" -}}
-valkey-cli {{ include "valkey.probeTlsArgs" . }} -p {{ .Values.service.ports.sentinel }} ping
+export VALKEYCLI_AUTH=$(cat /vault/secrets/valkey-password | tr -d '\n\r') && valkey-cli {{ include "valkey.probeTlsArgs" . }} -p {{ .Values.service.ports.sentinel }} ping
 {{- end -}}
 
 {{- define "valkey.sentinelReadyCommand" -}}
-valkey-cli {{ include "valkey.probeTlsArgs" . }} -p {{ .Values.service.ports.sentinel }} sentinel get-master-addr-by-name {{ .Values.sentinel.masterSet }} | grep -q .
+export VALKEYCLI_AUTH=$(cat /vault/secrets/valkey-password | tr -d '\n\r') && valkey-cli {{ include "valkey.probeTlsArgs" . }} -p {{ .Values.service.ports.sentinel }} sentinel get-master-addr-by-name {{ .Values.sentinel.masterSet }} | grep -q .
 {{- end -}}

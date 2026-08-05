@@ -1,10 +1,10 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: redis-sit
+  name: valkey-sit
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "20"
+    argocd.argoproj.io/sync-wave: "21"
 spec:
   project: default
   destination:
@@ -20,7 +20,7 @@ spec:
   source:
     repoURL: 'https://github.com/tondy-reslve/k8s-helm-gitops.git'
     targetRevision: HEAD
-    path: charts/redis
+    path: charts/valkey
     helm:
       valueFiles:
-        - ../../middleware/redis/values-sit.yaml
+        - ../../middleware/valkey/values-sit.yaml

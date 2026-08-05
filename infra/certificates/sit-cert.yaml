@@ -8,3 +8,14 @@ certificates:
       - "*.redis-headless.my-app-sit.svc.cluster.local"
       - "*.redis-sentinel.my-app-sit.svc.cluster.local"
       - "localhost"
+
+  valkey-crt:
+    namespace: my-app-sit
+    vaultRole: valkey-sit-role
+    dnsNames:
+    - "valkey-sit.my-app-sit.svc"
+    - "valkey-sit.my-app-sit.svc.cluster.local"
+    - "*.valkey-sit-headless.my-app-sit.svc.cluster.local"
+    - "valkey-sit-sentinel.my-app-sit.svc.cluster.local"
+    - "*.valkey-sit-sentinel.my-app-sit.svc.cluster.local"
+    - "localhost"

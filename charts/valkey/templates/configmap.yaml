@@ -71,6 +71,10 @@ data:
     #        node-entrypoint.sh --wait-only -> bounded init-container wait (never blocks recovery)
     set -eu
 
+    if [ -f /vault/secrets/valkey-password ]; then
+      export VALKEY_PASSWORD="$(cat /vault/secrets/valkey-password | tr -d '\n\r')"
+    fi
+
     MODE="${1:-run}"
     VALKEY_PORT={{ .Values.service.ports.valkey }}
     SENTINEL_HOST="{{ include "valkey.sentinelServiceFqdn" . }}"
@@ -255,6 +259,10 @@ data:
     # Total budget must stay below terminationGracePeriodSeconds. Never fails.
     set -u
 
+    if [ -f /vault/secrets/valkey-password ]; then
+      export VALKEY_PASSWORD="$(cat /vault/secrets/valkey-password | tr -d '\n\r')"
+    fi
+
     VALKEY_PORT={{ .Values.service.ports.valkey }}
     SENTINEL_HOST="{{ include "valkey.sentinelServiceFqdn" . }}"
     SENTINEL_PORT={{ .Values.service.ports.sentinel }}
@@ -300,6 +308,10 @@ data:
   sentinel-entrypoint.sh: |
     #!/bin/sh
     set -eu
+
+    if [ -f /vault/secrets/valkey-password ]; then
+      export VALKEY_PASSWORD="$(cat /vault/secrets/valkey-password | tr -d '\n\r')"
+    fi
 
     VALKEY_PORT={{ .Values.service.ports.valkey }}
     SENTINEL_PORT={{ .Values.service.ports.sentinel }}
