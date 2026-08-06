@@ -46,7 +46,7 @@ extraEnv:
 database:
   external:
     vendor: postgres
-    host: "postgresql-sit.my-app-sit.svc.cluster.local"
+    host: "postgresql-sit-postgresql.my-app-sit.svc.cluster.local"
     port: 5432
     name: "keycloak"
     username: "keycloak"
