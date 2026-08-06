@@ -19,3 +19,12 @@ certificates:
     - "valkey-sit-sentinel.my-app-sit.svc.cluster.local"
     - "*.valkey-sit-sentinel.my-app-sit.svc.cluster.local"
     - "localhost"
+
+  keycloak-crt:
+    namespace: my-app-sit
+    vaultRole: keycloak-sit-role
+    dnsNames:
+    - "keycloak.my-app-sit.svc.cluster.local"
+    - "keycloak-sit.my-app-sit.svc"
+    - "keycloak-sit.my-app-sit.svc.cluster.local"
+    - "localhost"
