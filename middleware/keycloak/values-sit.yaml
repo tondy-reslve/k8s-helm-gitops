@@ -42,6 +42,8 @@ extraEnv:
     value: "/tls/tls.key"
   - name: JGROUPS_DISCOVERY_PROTOCOL
     value: "JDBC_PING"
+  - name: KC_HOSTNAME_PORT
+    value: "30443"
 
 database:
   external:
