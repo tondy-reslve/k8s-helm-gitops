@@ -42,10 +42,8 @@ extraEnv:
     value: "/tls/tls.key"
   - name: JGROUPS_DISCOVERY_PROTOCOL
     value: "JDBC_PING"
-  - name: KC_HOSTNAME_URL
-    value: "https://keycloak.my-app-sit.svc.cluster.local:30443"
-  - name: KC_HOSTNAME_ADMIN_URL
-    value: "https://keycloak.my-app-sit.svc.cluster.local:30443"
+  - name: KC_HOSTNAME_PORT
+    value: "30443"
 
 database:
   external:
