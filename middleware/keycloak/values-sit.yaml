@@ -2,6 +2,11 @@ mode: production
 
 fullnameOverride: "keycloak-sit"
 
+image:
+  repository: quay.io/keycloak/keycloak
+  tag: "26.7.0"
+  pullPolicy: IfNotPresent
+
 replicaCount: 3
 
 cache:
