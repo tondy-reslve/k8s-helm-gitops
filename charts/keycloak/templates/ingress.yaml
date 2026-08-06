@@ -26,7 +26,7 @@ spec:
               service:
                 name: {{ include "keycloak.fullname" $ }}
                 port:
-                  name: http
+                  name: https
           {{- end }}
     {{- end }}
   {{- with .Values.ingress.public.tls }}
@@ -62,7 +62,7 @@ spec:
               service:
                 name: {{ include "keycloak.fullname" $ }}
                 port:
-                  name: http
+                  name: https
           {{- end }}
     {{- end }}
   {{- with .Values.ingress.admin.tls }}
