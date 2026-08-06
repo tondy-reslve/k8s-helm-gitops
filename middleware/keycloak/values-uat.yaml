@@ -69,3 +69,13 @@ ingress:
       - hosts:
           - "keycloak.my-app-uat.svc.cluster.local"
         secretName: "keycloak-crt"
+
+# -- Node selector for pod scheduling
+nodeSelector: 
+  pool: uat
+# -- Tolerations for pod scheduling
+tolerations: 
+  - key: "env"
+    operator: "Equal"
+    value: "uat"
+    effect: "NoSchedule"

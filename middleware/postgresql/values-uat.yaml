@@ -18,3 +18,13 @@ standalone:
     size: 2Gi
     accessModes:
       - ReadWriteOnce
+
+# -- Node selector for pod scheduling
+nodeSelector: 
+  pool: uat
+# -- Tolerations for pod scheduling
+tolerations: 
+  - key: "env"
+    operator: "Equal"
+    value: "uat"
+    effect: "NoSchedule"

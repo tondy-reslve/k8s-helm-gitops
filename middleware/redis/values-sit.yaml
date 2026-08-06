@@ -36,3 +36,13 @@ replication:
     persistence:
       storageClass: "longhorn-sit"
       size: 2Gi
+
+# -- Node selector for pod scheduling
+nodeSelector: 
+  pool: sit
+# -- Tolerations for pod scheduling
+tolerations: 
+  - key: "env"
+    operator: "Equal"
+    value: "sit"
+    effect: "NoSchedule"
