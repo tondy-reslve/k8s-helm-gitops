@@ -23,6 +23,7 @@ certificates:
   keycloak-crt:
     namespace: my-app-sit
     vaultRole: keycloak-sit-role
+    commonName: "keycloak.my-app-sit.svc.cluster.local"
     dnsNames:
     - "keycloak.my-app-sit.svc.cluster.local"
     - "keycloak-sit.my-app-sit.svc"
