@@ -14,7 +14,7 @@ auth:
 standalone:
   persistence:
     enabled: true
-    storageClass: "longhorn-sit"
+    storageClass: "longhorn-uat"
     size: 2Gi
     accessModes:
       - ReadWriteOnce
