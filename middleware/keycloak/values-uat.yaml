@@ -1,0 +1,71 @@
+mode: production
+
+fullnameOverride: "keycloak-uat"
+
+image:
+  repository: quay.io/keycloak/keycloak
+  tag: "26.6.4"
+  pullPolicy: IfNotPresent
+
+replicaCount: 3
+
+cache:
+  enabled: true
+  stack: jdbc-ping 
+
+hostname:
+  hostname: "https://keycloak.my-app-uat.svc.cluster.local:30443"
+  strict: false
+
+http:
+  enabled: false
+
+podAnnotations:
+  vault.hashicorp.com/agent-inject: "true"
+  vault.hashicorp.com/role: "my-app-uat-role"
+  vault.hashicorp.com/tls-skip-verify: "true"
+  vault.hashicorp.com/namespace: "admin"
+
+  vault.hashicorp.com/agent-inject-secret-keycloak: "secret/data/uat/keycloak"
+  vault.hashicorp.com/agent-inject-template-keycloak: |
+    {{- with secret "secret/data/uat/keycloak" -}}
+    export KC_BOOTSTRAP_ADMIN_USERNAME="{{ index .Data.data "admin-username" }}"
+    export KC_BOOTSTRAP_ADMIN_PASSWORD="{{ index .Data.data "admin-password" }}"
+    export KC_DB_USERNAME="{{ index .Data.data "db-username" }}"
+    export KC_DB_PASSWORD="{{ index .Data.data "db-password" }}"
+    {{- end -}}
+
+extraEnv:
+  - name: KC_HTTPS_CERTIFICATE_FILE
+    value: "/tls/tls.crt"
+  - name: KC_HTTPS_CERTIFICATE_KEY_FILE
+    value: "/tls/tls.key"
+  - name: JGROUPS_DISCOVERY_PROTOCOL
+    value: "JDBC_PING"
+
+database:
+  external:
+    vendor: postgres
+    host: "postgresql-sit-postgresql.my-app-sit.svc.cluster.local"
+    port: 5432
+    name: "keycloak"
+    username: "keycloak"
+
+proxy:
+  headers: xforwarded
+
+ingress:
+  public:
+    enabled: true
+    ingressClassName: nginx
+    annotations:
+      nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    hosts:
+      - host: "keycloak.my-app-uat.svc.cluster.local"
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - hosts:
+          - "keycloak.my-app-uat.svc.cluster.local"
+        secretName: "keycloak-crt"

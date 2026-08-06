@@ -9,3 +9,13 @@ certificates:
     - "valkey-uat-sentinel.my-app-uat.svc.cluster.local"
     - "*.valkey-uat-sentinel.my-app-uat.svc.cluster.local"
     - "localhost"
+
+    keycloak-crt:
+    namespace: my-app-uat
+    vaultRole: keycloak-uat-role
+    commonName: "keycloak.my-app-uat.svc.cluster.local"
+    dnsNames:
+    - "keycloak.my-app-uat.svc.cluster.local"
+    - "keycloak-uat.my-app-uat.svc"
+    - "keycloak-uat.my-app-uat.svc.cluster.local"
+    - "localhost"

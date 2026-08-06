@@ -1,0 +1,20 @@
+architecture: standalone
+
+image:
+  repository: docker.io/library/postgres
+  tag: "18.4-trixie"
+  pullPolicy: IfNotPresent
+
+auth:
+  database: "keycloak"
+  username: "keycloak"
+  password: "KeycloakPassword123!"
+  postgresPassword: "SuperAdminPassword123!"
+
+standalone:
+  persistence:
+    enabled: true
+    storageClass: "longhorn-sit"
+    size: 2Gi
+    accessModes:
+      - ReadWriteOnce

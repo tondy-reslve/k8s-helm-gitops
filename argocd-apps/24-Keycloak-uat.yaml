@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: keycloak-uat
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "24"
+spec:
+  project: uat-project
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: my-app-uat
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+  source:
+    repoURL: 'https://github.com/tondy-reslve/k8s-helm-gitops.git'
+    targetRevision: HEAD
+    path: charts/keycloak
+    helm:
+      valueFiles:
+        - ../../middleware/keycloak/values-uat.yaml
