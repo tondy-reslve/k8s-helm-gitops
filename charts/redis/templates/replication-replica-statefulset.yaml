@@ -41,6 +41,11 @@ spec:
           ports:
             - name: redis
               containerPort: {{ .Values.service.ports.redis }}
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
           livenessProbe:
             exec:
               command:
