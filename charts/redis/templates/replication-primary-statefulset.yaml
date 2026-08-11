@@ -36,11 +36,6 @@ spec:
           ports:
             - name: redis
               containerPort: {{ .Values.service.ports.redis }}
-          env:
-            - name: POD_NAME
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.name
           livenessProbe:
             exec:
               command:
@@ -80,16 +75,11 @@ spec:
             - name: config
               mountPath: /etc/redis/redis.conf
               subPath: redis-primary.conf
-            {{- if not .Values.extraVolumeMounts }}
             - name: data
               mountPath: /data
-            {{- end }}
             - name: tls-cert
               mountPath: /tls
               readOnly: true
-            {{- with .Values.extraVolumeMounts }}
-            {{- toYaml . | nindent 12 }}
-            {{- end }}
         {{- if .Values.metrics.enabled }}
         - name: metrics
           image: "{{ .Values.metrics.image.repository }}:{{ .Values.metrics.image.tag }}"
@@ -113,12 +103,9 @@ spec:
         - name: tls-cert
           secret:
             secretName: {{ .Values.tls.existingSecret | default "redis-tls" }}
-        {{- if and (not .Values.replication.primary.persistence.enabled) (not .Values.extraVolumes) }}
+        {{- if not .Values.replication.primary.persistence.enabled }}
         - name: data
           emptyDir: {}
-        {{- end }}
-        {{- with .Values.extraVolumes }}
-        {{- toYaml . | nindent 8 }}
         {{- end }}
   {{- if .Values.replication.primary.persistence.enabled }}
   volumeClaimTemplates:

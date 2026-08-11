@@ -30,19 +30,12 @@ tls:
 replication:
   primary:
     persistence:
-      enabled: false
+      storageClass: "longhorn-uat"
+      size: 2Gi
   replica:
     persistence:
-      enabled: false
-
-extraVolumes:
-  - name: shared-data-vol
-    persistentVolumeClaim:
-      claimName: big-shared-pvc
-extraVolumeMounts:
-  - name: shared-data-vol
-    mountPath: /data
-    subPathExpr: "redis-uat-data/$(POD_NAME)"
+      storageClass: "longhorn-uat"
+      size: 2Gi
 
 # -- Node selector for pod scheduling
 nodeSelector: 
