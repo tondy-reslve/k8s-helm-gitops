@@ -80,8 +80,10 @@ spec:
             - name: config
               mountPath: /etc/redis/redis.conf
               subPath: redis-replica.conf
+            {{- if not .Values.extraVolumeMounts }}
             - name: data
               mountPath: /data
+            {{- end }}
             - name: tls-cert
               mountPath: /tls
               readOnly: true
