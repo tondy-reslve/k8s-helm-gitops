@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: Apache-2.0
+architecture: cluster
+cluster:
+  minInSyncReplicas: 2
+  brokers:
+    persistence:
+      size: 50Gi
+config:
+  broker: |
+    log.cleaner.enable=true

@@ -1,0 +1,39 @@
+{{/* SPDX-License-Identifier: Apache-2.0 */}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "kafka.clientServiceName" . }}
+  labels:
+    {{- include "kafka.labels" . | nindent 4 }}
+    {{- with .Values.service.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with .Values.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.service.type }}
+  {{- with .Values.service.ipFamilyPolicy }}
+  ipFamilyPolicy: {{ . }}
+  {{- end }}
+  {{- with .Values.service.ipFamilies }}
+  ipFamilies:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  selector:
+    {{- include "kafka.selectorLabels" . | nindent 4 }}
+    {{- if eq .Values.architecture "cluster" }}
+    {{- if eq (.Values.cluster.brokers.replicaCount | int) 0 }}
+    app.kubernetes.io/component: controller
+    {{- else }}
+    app.kubernetes.io/component: broker
+    {{- end }}
+    {{- else }}
+    app.kubernetes.io/component: single-broker
+    {{- end }}
+  ports:
+    - name: client
+      port: {{ .Values.listeners.client.port }}
+      targetPort: client
+      protocol: TCP

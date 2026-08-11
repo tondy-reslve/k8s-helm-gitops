@@ -19,3 +19,13 @@ certificates:
     - "keycloak-uat.my-app-uat.svc"
     - "keycloak-uat.my-app-uat.svc.cluster.local"
     - "localhost"
+
+  redis-crt:
+    namespace: my-app-uat
+    vaultRole: redis-uat-role
+    dnsNames:
+      - "redis.my-app-uat.svc"
+      - "redis.my-app-uat.svc.cluster.local"
+      - "*.redis-headless.my-app-uat.svc.cluster.local"
+      - "*.redis-sentinel.my-app-uat.svc.cluster.local"
+      - "localhost"

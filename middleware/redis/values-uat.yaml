@@ -1,0 +1,55 @@
+architecture: sentinel
+
+image:
+  repository: docker.io/library/redis
+  tag: "6.2.23"
+  pullPolicy: IfNotPresent
+
+podAnnotations:
+  vault.hashicorp.com/agent-inject: "true"
+  vault.hashicorp.com/role: "my-app-uat-role"
+  vault.hashicorp.com/tls-skip-verify: "true"
+  vault.hashicorp.com/namespace: "admin"
+
+  vault.hashicorp.com/agent-inject-secret-redis-password: "secret/data/uat/redis"
+  vault.hashicorp.com/agent-inject-template-redis-password: |
+    {{- with secret "secret/data/uat/redis" -}}
+    {{ index .Data.data "redis-password" }}
+    {{- end -}}
+
+auth:
+  enabled: true
+
+tls:
+  enabled: true
+  existingSecret: "redis-crt"
+  certFilename: tls.crt
+  keyFilename: tls.key
+  caFilename: ca.crt
+
+replication:
+  primary:
+    persistence:
+      enabled: false
+  replica:
+    persistence:
+      enabled: false
+
+extraVolumes:
+  - name: shared-data-vol
+    persistentVolumeClaim:
+      claimName: big-shared-pvc
+extraVolumeMounts:
+  - name: shared-data-vol
+    mountPath: /data
+    subPathExpr: "redis-uat-data/$(POD_NAME)"
+
+# -- Node selector for pod scheduling
+nodeSelector: 
+  pool: uat
+# -- Tolerations for pod scheduling
+tolerations: 
+  - key: "env"
+    operator: "Equal"
+    value: "uat"
+    effect: "NoSchedule"

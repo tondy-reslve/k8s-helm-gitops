@@ -1,0 +1,94 @@
+{{/* SPDX-License-Identifier: Apache-2.0 */}}
+{{- if eq .Values.architecture "single-broker" }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "kafka.singleHeadlessServiceName" . }}
+  labels:
+    {{- include "kafka.labels" . | nindent 4 }}
+spec:
+  clusterIP: None
+  publishNotReadyAddresses: true
+  {{- with .Values.service.ipFamilyPolicy }}
+  ipFamilyPolicy: {{ . }}
+  {{- end }}
+  {{- with .Values.service.ipFamilies }}
+  ipFamilies:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  selector:
+    {{- include "kafka.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: single-broker
+  ports:
+    - name: client
+      port: {{ .Values.listeners.client.port }}
+      targetPort: client
+      protocol: TCP
+    - name: controller
+      port: {{ .Values.listeners.controller.port }}
+      targetPort: controller
+      protocol: TCP
+{{- else }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "kafka.controllerHeadlessServiceName" . }}
+  labels:
+    {{- include "kafka.labels" . | nindent 4 }}
+spec:
+  clusterIP: None
+  publishNotReadyAddresses: true
+  {{- with .Values.service.ipFamilyPolicy }}
+  ipFamilyPolicy: {{ . }}
+  {{- end }}
+  {{- with .Values.service.ipFamilies }}
+  ipFamilies:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  selector:
+    {{- include "kafka.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: controller
+  ports:
+    - name: controller
+      port: {{ .Values.listeners.controller.port }}
+      targetPort: controller
+      protocol: TCP
+    {{- if eq (.Values.cluster.brokers.replicaCount | int) 0 }}
+    - name: client
+      port: {{ .Values.listeners.client.port }}
+      targetPort: client
+      protocol: TCP
+    {{- end }}
+{{- if gt (.Values.cluster.brokers.replicaCount | int) 0 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "kafka.brokerHeadlessServiceName" . }}
+  labels:
+    {{- include "kafka.labels" . | nindent 4 }}
+spec:
+  clusterIP: None
+  publishNotReadyAddresses: true
+  {{- with .Values.service.ipFamilyPolicy }}
+  ipFamilyPolicy: {{ . }}
+  {{- end }}
+  {{- with .Values.service.ipFamilies }}
+  ipFamilies:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  selector:
+    {{- include "kafka.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: broker
+  ports:
+    - name: client
+      port: {{ .Values.listeners.client.port }}
+      targetPort: client
+      protocol: TCP
+    - name: internal
+      port: {{ .Values.listeners.interBroker.port }}
+      targetPort: internal
+      protocol: TCP
+{{- end }}
+{{- end }}
