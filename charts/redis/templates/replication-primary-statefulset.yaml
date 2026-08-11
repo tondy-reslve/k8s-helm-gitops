@@ -80,6 +80,9 @@ spec:
             - name: tls-cert
               mountPath: /tls
               readOnly: true
+            {{- with .Values.extraVolumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
         {{- if .Values.metrics.enabled }}
         - name: metrics
           image: "{{ .Values.metrics.image.repository }}:{{ .Values.metrics.image.tag }}"
@@ -103,9 +106,12 @@ spec:
         - name: tls-cert
           secret:
             secretName: {{ .Values.tls.existingSecret | default "redis-tls" }}
-        {{- if not .Values.replication.primary.persistence.enabled }}
+        {{- if and (not .Values.replication.primary.persistence.enabled) (not .Values.extraVolumes) }}
         - name: data
           emptyDir: {}
+        {{- end }}
+        {{- with .Values.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
         {{- end }}
   {{- if .Values.replication.primary.persistence.enabled }}
   volumeClaimTemplates:
