@@ -1,4 +1,7 @@
 vault:
+  global:
+    tlsDisable: false
+
   injector:
     enabled: false
 
