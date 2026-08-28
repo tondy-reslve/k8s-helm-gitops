@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: vault
+  name: vault-server
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "0"
@@ -10,7 +10,30 @@ spec:
   source:
     repoURL: 'https://github.com/tondy-reslve/k8s-helm-gitops.git'
     targetRevision: HEAD
-    path: infra/vault
+    path: infra/vault-server
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: vault
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: vault-plugins
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/tondy-reslve/k8s-helm-gitops.git'
+    targetRevision: HEAD
+    path: infra/vault-plugins
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: vault

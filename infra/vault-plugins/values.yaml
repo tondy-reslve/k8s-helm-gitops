@@ -1,0 +1,32 @@
+vault:
+  server:
+    enabled: false
+  ui:
+    enabled: false
+
+  global:
+    externalVaultAddr: "https://vault.infra.local"
+    
+  injector:
+    enabled: true
+    nodeSelector:
+      pool: infra
+
+    agentDefaults:
+      extraVolumes:
+        - name: vault-ca-vol
+          secret:
+            secretName: vault-ca-secret
+      extraVolumeMounts:
+        - name: vault-ca-vol
+          mountPath: /vault/tls
+          readOnly: true
+      extraEnvironmentVars:
+        VAULT_CACERT: "/vault/tls/ca.crt"
+
+vault-secrets-operator:
+  defaultVaultConnection:
+    enabled: true
+    address: "https://vault.infra.local"
+    skipTLSVerify: false
+    caCertSecret: "vault-ca-secret"

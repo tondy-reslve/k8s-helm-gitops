@@ -1,0 +1,37 @@
+vault:
+  injector:
+    enabled: false
+
+  server:
+    image:
+      repository: "hashicorp/vault"
+      tag: "1.19.9"
+    nodeSelector:
+      pool: infra
+    extraVolumes:
+      - type: secret
+        name: vault-tls-secret
+    ha:
+      enabled: true
+      replicas: 3
+      raft:
+        enabled: true
+        setNodeId: true
+        config: |
+          ui = true
+          listener "tcp" {
+            tls_disable = 0
+            address = "[::]:8200"
+            cluster_address = "[::]:8201"
+            tls_cert_file      = "/vault/userconfig/vault-tls-secret/tls.crt"
+            tls_key_file       = "/vault/userconfig/vault-tls-secret/tls.key"
+            tls_client_ca_file = "/vault/userconfig/vault-tls-secret/ca.crt"
+          }
+          storage "raft" {
+            path = "/vault/data"
+          }
+
+  ui:
+    enabled: true
+    serviceType: NodePort
+    serviceNodePort: 32000

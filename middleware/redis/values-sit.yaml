@@ -8,7 +8,7 @@ image:
 podAnnotations:
   vault.hashicorp.com/agent-inject: "true"
   vault.hashicorp.com/role: "my-app-sit-role"
-  vault.hashicorp.com/tls-skip-verify: "true"
+  vault.hashicorp.com/tls-skip-verify: "false"
   vault.hashicorp.com/namespace: "admin"
 
   vault.hashicorp.com/agent-inject-secret-redis-password: "secret/data/sit/redis"

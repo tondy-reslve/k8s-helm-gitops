@@ -1,0 +1,12 @@
+apiVersion: v2
+name: vault-plugins
+description: Vault Agent Injector and Vault Secrets Operator
+type: application
+version: 1.0.0
+dependencies:
+  - name: vault
+    repository: https://helm.releases.hashicorp.com
+    version: 0.30.0
+  - name: vault-secrets-operator
+    repository: https://helm.releases.hashicorp.com
+    version: 0.8.0

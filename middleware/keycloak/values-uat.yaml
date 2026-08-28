@@ -23,7 +23,7 @@ http:
 podAnnotations:
   vault.hashicorp.com/agent-inject: "true"
   vault.hashicorp.com/role: "my-app-uat-role"
-  vault.hashicorp.com/tls-skip-verify: "true"
+  vault.hashicorp.com/tls-skip-verify: "false"
   vault.hashicorp.com/namespace: "admin"
 
   vault.hashicorp.com/agent-inject-secret-keycloak: "secret/data/uat/keycloak"
