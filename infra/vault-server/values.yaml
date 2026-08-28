@@ -73,5 +73,5 @@ vault:
 
   ui:
     enabled: true
-    serviceType: NodePort
+    serviceType: ClusterIP
     serviceNodePort: 32000
