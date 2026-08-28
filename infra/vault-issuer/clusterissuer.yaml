@@ -4,7 +4,7 @@ metadata:
   name: vault-issuer
 spec:
   vault:
-    server: https://vault.infra.local
+    server: https://vault.infra.local:30443
     path: pki/sign/k8s-dot-local
     caBundleSecretRef:
       name: vault-ca-secret
