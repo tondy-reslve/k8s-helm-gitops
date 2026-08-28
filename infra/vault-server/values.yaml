@@ -50,7 +50,6 @@ vault:
             cluster_address = "[::]:8201"
             tls_cert_file      = "/vault/userconfig/vault-tls-secret/tls.crt"
             tls_key_file       = "/vault/userconfig/vault-tls-secret/tls.key"
-            tls_client_ca_file = "/vault/userconfig/vault-tls-secret/ca.crt"
           }
           storage "raft" {
             path = "/vault/data"
