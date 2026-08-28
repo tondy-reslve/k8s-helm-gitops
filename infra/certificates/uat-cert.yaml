@@ -1,31 +1,21 @@
 certificates:
-  valkey-crt:
+  uat-crt:
     namespace: my-app-uat
-    vaultRole: valkey-uat-role
+    commonName: "*.my-app-uat.svc.cluster.local"
     dnsNames:
-    - "valkey-uat.my-app-uat.svc"
-    - "valkey-uat.my-app-uat.svc.cluster.local"
-    - "*.valkey-uat-headless.my-app-uat.svc.cluster.local"
-    - "valkey-uat-sentinel.my-app-uat.svc.cluster.local"
-    - "*.valkey-uat-sentinel.my-app-uat.svc.cluster.local"
-    - "localhost"
-
-  keycloak-crt:
-    namespace: my-app-uat
-    vaultRole: keycloak-uat-role
-    commonName: "keycloak.my-app-uat.svc.cluster.local"
-    dnsNames:
-    - "keycloak.my-app-uat.svc.cluster.local"
-    - "keycloak-uat.my-app-uat.svc"
-    - "keycloak-uat.my-app-uat.svc.cluster.local"
-    - "localhost"
-
-  redis-crt:
-    namespace: my-app-uat
-    vaultRole: redis-uat-role
-    dnsNames:
+      # Keycloak
+      - "keycloak.my-app-uat.svc.cluster.local"
+      - "keycloak-uat.my-app-uat.svc"
+      - "keycloak-uat.my-app-uat.svc.cluster.local"
+      # Redis
       - "redis.my-app-uat.svc"
       - "redis.my-app-uat.svc.cluster.local"
       - "*.redis-headless.my-app-uat.svc.cluster.local"
       - "*.redis-sentinel.my-app-uat.svc.cluster.local"
+      # Valkey
+      - "valkey-uat.my-app-uat.svc"
+      - "valkey-uat.my-app-uat.svc.cluster.local"
+      - "*.valkey-uat-headless.my-app-uat.svc.cluster.local"
+      - "*.valkey-uat-sentinel.my-app-uat.svc.cluster.local"
+      # Common
       - "localhost"

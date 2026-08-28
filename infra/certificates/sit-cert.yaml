@@ -1,31 +1,21 @@
 certificates:
-  redis-crt:
+  sit-crt:
     namespace: my-app-sit
-    vaultRole: redis-sit-role
+    commonName: "*.my-app-sit.svc.cluster.local"
     dnsNames:
+      # Keycloak
+      - "keycloak.my-app-sit.svc.cluster.local"
+      - "keycloak-sit.my-app-sit.svc"
+      - "keycloak-sit.my-app-sit.svc.cluster.local"
+      # Redis
       - "redis.my-app-sit.svc"
       - "redis.my-app-sit.svc.cluster.local"
       - "*.redis-headless.my-app-sit.svc.cluster.local"
       - "*.redis-sentinel.my-app-sit.svc.cluster.local"
+      # Valkey
+      - "valkey-sit.my-app-sit.svc"
+      - "valkey-sit.my-app-sit.svc.cluster.local"
+      - "*.valkey-sit-headless.my-app-sit.svc.cluster.local"
+      - "*.valkey-sit-sentinel.my-app-sit.svc.cluster.local"
+      # Common
       - "localhost"
-
-  valkey-crt:
-    namespace: my-app-sit
-    vaultRole: valkey-sit-role
-    dnsNames:
-    - "valkey-sit.my-app-sit.svc"
-    - "valkey-sit.my-app-sit.svc.cluster.local"
-    - "*.valkey-sit-headless.my-app-sit.svc.cluster.local"
-    - "valkey-sit-sentinel.my-app-sit.svc.cluster.local"
-    - "*.valkey-sit-sentinel.my-app-sit.svc.cluster.local"
-    - "localhost"
-
-  keycloak-crt:
-    namespace: my-app-sit
-    vaultRole: keycloak-sit-role
-    commonName: "keycloak.my-app-sit.svc.cluster.local"
-    dnsNames:
-    - "keycloak.my-app-sit.svc.cluster.local"
-    - "keycloak-sit.my-app-sit.svc"
-    - "keycloak-sit.my-app-sit.svc.cluster.local"
-    - "localhost"
