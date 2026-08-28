@@ -1,4 +1,6 @@
 controller:
+  publishService:
+    enabled: true
   nodeSelector:
     pool: infra
   service:
