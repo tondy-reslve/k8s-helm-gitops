@@ -60,7 +60,7 @@ tls:
   # -- Enable TLS. Requires tls.existingSecret.
   enabled: true
   # -- Existing secret with tls.crt, tls.key and ca.crt
-  existingSecret: "valkey-crt"
+  existingSecret: "uat-crt"
   # -- Certificate filename mounted from tls.existingSecret
   certFilename: tls.crt
   # -- Private key filename mounted from tls.existingSecret

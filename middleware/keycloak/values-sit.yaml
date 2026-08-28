@@ -68,7 +68,7 @@ ingress:
     tls:
       - hosts:
           - "keycloak.my-app-sit.svc.cluster.local"
-        secretName: "keycloak-crt"
+        secretName: "sit-crt"
 
 # -- Node selector for pod scheduling
 nodeSelector: 

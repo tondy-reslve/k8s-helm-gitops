@@ -22,7 +22,7 @@ auth:
 
 tls:
   enabled: true
-  existingSecret: "redis-crt"
+  existingSecret: "sit-crt"
   certFilename: tls.crt
   keyFilename: tls.key
   caFilename: ca.crt
