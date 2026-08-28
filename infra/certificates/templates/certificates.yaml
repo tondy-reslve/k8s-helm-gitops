@@ -11,7 +11,7 @@ spec:
   issuerRef:
     name: vault-issuer
     kind: ClusterIssuer
-  commonName: commonName: {{ $config.commonName | default (index $config.dnsNames 0) | quote }}
+  commonName: {{ $config.commonName | default (index $config.dnsNames 0) | quote }}
   dnsNames:
     {{- toYaml $config.dnsNames | nindent 4 }}
 {{- end }}
