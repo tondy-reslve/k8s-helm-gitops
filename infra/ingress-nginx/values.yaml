@@ -1,9 +1,10 @@
-ingress-nginx:
-  controller:
-    nodeSelector:
-      pool: infra
-    service:
-      type: NodePort
-      nodePorts:
-        http: 30080
-        https: 30443
+controller:
+  nodeSelector:
+    pool: infra
+  service:
+    type: NodePort
+    nodePorts:
+      http: 30080
+      https: 30443
+  extraArgs:
+    default-ssl-certificate: "vault/vault-ui-tls"
