@@ -54,6 +54,22 @@ vault:
           }
           storage "raft" {
             path = "/vault/data"
+
+            retry_join {
+              leader_api_addr = "https://vault-server-0.vault-server-internal.vault.svc.cluster.local:8200"
+              leader_ca_cert_file = "/vault/userconfig/vault-tls-secret/ca.crt"
+              leader_tls_servername = "vault.infra.local"
+            }
+            retry_join {
+              leader_api_addr = "https://vault-server-1.vault-server-internal.vault.svc.cluster.local:8200"
+              leader_ca_cert_file = "/vault/userconfig/vault-tls-secret/ca.crt"
+              leader_tls_servername = "vault.infra.local"
+            }
+            retry_join {
+              leader_api_addr = "https://vault-server-2.vault-server-internal.vault.svc.cluster.local:8200"
+              leader_ca_cert_file = "/vault/userconfig/vault-tls-secret/ca.crt"
+              leader_tls_servername = "vault.infra.local"
+            }
           }
 
   ui:
