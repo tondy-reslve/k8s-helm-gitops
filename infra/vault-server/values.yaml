@@ -10,6 +10,7 @@ vault:
       pool: infra
 
     extraEnvironmentVars:
+      VAULT_ADDR: "https://127.0.0.1:8200"
       VAULT_CACERT: "/vault/userconfig/vault-tls-secret/ca.crt"
 
     extraVolumes:
@@ -17,6 +18,15 @@ vault:
         name: vault-tls-secret
       - type: secret
         name: vault-ca-secret
+
+    readinessProbe:
+      enabled: true
+      path: "/v1/sys/health?standbyok=true"
+      scheme: "HTTPS"
+    livenessProbe:
+      enabled: true
+      path: "/v1/sys/health?standbyok=true"
+      scheme: "HTTPS"
 
     dataStorage:
       enabled: true
