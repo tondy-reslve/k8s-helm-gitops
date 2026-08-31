@@ -33,8 +33,11 @@ image:
 podAnnotations:
   vault.hashicorp.com/agent-inject: "true"
   vault.hashicorp.com/role: "my-app-uat-role"
-  vault.hashicorp.com/tls-skip-verify: "false"
   vault.hashicorp.com/namespace: "admin"
+
+  vault.hashicorp.com/tls-skip-verify: "false"
+  vault.hashicorp.com/tls-secret: "vault-ca-secret"
+  vault.hashicorp.com/ca-cert: "/vault/tls/ca.crt"
   
   vault.hashicorp.com/agent-inject-secret-valkey-password: "secret/data/uat/valkey"
   vault.hashicorp.com/agent-inject-template-valkey-password: |
