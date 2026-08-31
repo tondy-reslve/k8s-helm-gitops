@@ -25,7 +25,7 @@ podAnnotations:
   vault.hashicorp.com/role: "my-app-sit-role"
   vault.hashicorp.com/namespace: "admin"
 
-  vault.hashicorp.com/tls-skip-verify: "true"
+  vault.hashicorp.com/tls-skip-verify: "false"
   vault.hashicorp.com/tls-secret: "vault-ca-secret"
   vault.hashicorp.com/ca-cert: "/vault/tls/ca.crt"
 
