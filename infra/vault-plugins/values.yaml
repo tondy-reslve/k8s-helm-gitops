@@ -15,17 +15,14 @@ vault:
       - ip: "192.168.118.254"
         hostnames:
           - "vault.infra.local"
+    resources:
+      requests: { cpu: 50m, memory: 64Mi }
+      limits:   { cpu: 250m, memory: 128Mi }
     agentDefaults:
-      extraVolumes:
-        - name: vault-ca-vol
-          secret:
-            secretName: vault-ca-secret
-      extraVolumeMounts:
-        - name: vault-ca-vol
-          mountPath: /vault/tls
-          readOnly: true
-      extraEnvironmentVars:
-        VAULT_CACERT: "/vault/tls/ca.crt"
+      cpuRequest: 50m
+      cpuLimit: 250m
+      memRequest: 64Mi
+      memLimit: 128Mi
 
 vault-secrets-operator:
   defaultVaultConnection:
@@ -37,8 +34,21 @@ vault-secrets-operator:
     - ip: "192.168.118.254"
       hostnames:
         - "vault.infra.local"
+  defaultAuthMethod:
+    enabled: true
+    method: kubernetes
+    mount: kubernetes
+    kubernetes:
+      role: "vso-role"
   controller:
     kubeRbacProxy:
       image:
         repository: "quay.io/brancz/kube-rbac-proxy"
         tag: "v0.15.0"
+      resources:
+        requests: { cpu: 5m, memory: 32Mi }
+        limits:   { cpu: 100m, memory: 64Mi }
+    manager:
+      resources:
+        requests: { cpu: 10m, memory: 64Mi }
+        limits:   { cpu: 500m, memory: 128Mi }
