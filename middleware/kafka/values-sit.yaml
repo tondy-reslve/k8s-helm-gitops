@@ -61,16 +61,6 @@ tolerations:
 
 extraManifests:
   - apiVersion: secrets.hashicorp.com/v1beta1
-    kind: VaultAuth
-    metadata:
-      name: kafka-vault-auth
-    spec:
-      method: kubernetes
-      mount: kubernetes
-      kubernetes:
-        role: my-app-sit-role
-        serviceAccount: default
-  - apiVersion: secrets.hashicorp.com/v1beta1
     kind: VaultStaticSecret
     metadata:
       name: kafka-kraft-secret-sync
@@ -78,7 +68,7 @@ extraManifests:
       type: kv-v2
       mount: secret
       path: sit/kafka
-      vaultAuthRef: kafka-vault-auth
+      vaultAuthRef: sit-common-vault-auth
       destination:
         name: kafka-kraft-secret
         create: true

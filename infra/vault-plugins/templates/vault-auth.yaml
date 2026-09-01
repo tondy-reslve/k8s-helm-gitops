@@ -1,0 +1,11 @@
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultAuth
+metadata:
+  name: sit-common-vault-auth
+  namespace: my-app-sit
+spec:
+  method: kubernetes
+  mount: kubernetes
+  kubernetes:
+    role: my-app-sit-role
+    serviceAccount: default
