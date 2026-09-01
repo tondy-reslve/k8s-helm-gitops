@@ -58,8 +58,7 @@ tolerations:
     effect: "NoSchedule"
 
 extraManifests:
-  - |
-    apiVersion: secrets.hashicorp.com/v1beta1
+  - apiVersion: secrets.hashicorp.com/v1beta1
     kind: VaultStaticSecret
     metadata:
       name: kafka-kraft-secret-sync
