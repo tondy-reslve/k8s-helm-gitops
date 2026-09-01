@@ -66,6 +66,9 @@ extraManifests:
       type: kv-v2
       mount: secret
       path: sit/kafka
+      vaultAuthRef:
+        name: default
+        namespace: vault
       destination:
         name: kafka-kraft-secret
         create: true
