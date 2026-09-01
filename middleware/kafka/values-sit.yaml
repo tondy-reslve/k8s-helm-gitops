@@ -23,7 +23,8 @@ cluster:
   controllers:
     replicaCount: 3
     persistence:
-      size: 8Gi
+      storageClass: "longhorn-sit"
+      size: 5Gi
     resources:
       requests:
         memory: 512Mi
@@ -34,7 +35,8 @@ cluster:
   brokers:
     replicaCount: 3
     persistence:
-      size: 50Gi
+      storageClass: "longhorn-sit"
+      size: 10Gi
     resources:
       requests:
         memory: 1Gi
