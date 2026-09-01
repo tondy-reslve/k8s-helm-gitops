@@ -3,6 +3,7 @@ caSecret:
     - vault
     - my-app-sit
     - my-app-uat
+    - test-ca-secret
 
 vault:
   server:
