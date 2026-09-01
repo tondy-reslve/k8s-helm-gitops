@@ -56,3 +56,17 @@ tolerations:
     operator: "Equal"
     value: "sit"
     effect: "NoSchedule"
+
+extraManifests:
+  - |
+    apiVersion: secrets.hashicorp.com/v1beta1
+    kind: VaultStaticSecret
+    metadata:
+      name: kafka-kraft-secret-sync
+    spec:
+      type: kv-v2
+      mount: secret
+      path: sit/kafka
+      destination:
+        name: kafka-kraft-secret
+        create: true
