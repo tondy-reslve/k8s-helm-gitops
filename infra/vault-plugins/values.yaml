@@ -1,3 +1,9 @@
+caSecret:
+  namespaces:
+    - vault
+    - my-app-sit
+    - my-app-uat
+
 vault:
   server:
     enabled: false
@@ -36,6 +42,7 @@ vault-secrets-operator:
     mount: kubernetes
     kubernetes:
       role: "vso-role"
+      serviceAccount: "vault-plugins-vault-secrets-operator-controller-manager"
   controller:
     hostAliases:
     - ip: "192.168.118.254"
