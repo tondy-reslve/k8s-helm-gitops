@@ -18,6 +18,7 @@ podAnnotations:
 
   vault.hashicorp.com/agent-inject: "true"
   vault.hashicorp.com/role: "my-app-sit-role"
+  vault.hashicorp.com/namespace: "admin"
 
   vault.hashicorp.com/tls-skip-verify: "false"
   vault.hashicorp.com/tls-secret: "vault-ca-secret"
