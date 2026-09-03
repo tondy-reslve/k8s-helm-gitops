@@ -27,6 +27,6 @@ podAnnotations:
   vault.hashicorp.com/agent-inject-secret-db-config.properties: "secret/data/sit/my-app"
   vault.hashicorp.com/agent-inject-template-db-config.properties: |
     {{- with secret "secret/data/sit/my-app" -}}
-    DB_USER={{ .Data.data.db-username }}
-    DB_PASS={{ .Data.data.db-password }}
+    DB_USER={{ index .Data.data "db-username" }}
+    DB_PASS={{ index .Data.data "db-password" }}
     {{- end -}}
