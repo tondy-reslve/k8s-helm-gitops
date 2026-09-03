@@ -4,6 +4,7 @@ caSecret:
     - my-app-sit
     - my-app-uat
     - test-ca-secret
+    - sit-backend
 
 vault:
   server:
