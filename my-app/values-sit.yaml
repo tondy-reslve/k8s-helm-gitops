@@ -2,8 +2,8 @@ env: sit
 replicaCount: 3
 
 image:
-  repository: nginx
-  tag: alpine
+  repository: tondychiu/lotto-backend
+  tag: latest
 
 nodeSelector:
   pool: sit
@@ -15,11 +15,18 @@ tolerations:
     effect: "NoSchedule"
 
 podAnnotations:
+
   vault.hashicorp.com/agent-inject: "true"
   vault.hashicorp.com/role: "my-app-sit-role"
-  vault.hashicorp.com/agent-inject-secret-db-config: "secret/data/my-app-sit/config"
-  vault.hashicorp.com/agent-inject-template-db-config: |
-    {{- with secret "secret/data/my-app-sit/config" -}}
-    DB_USER={{ .Data.data.username }}
-    DB_PASSWORD={{ .Data.data.password }}
+  vault.hashicorp.com/namespace: "admin"
+
+  vault.hashicorp.com/tls-skip-verify: "false"
+  vault.hashicorp.com/tls-secret: "vault-ca-secret"
+  vault.hashicorp.com/ca-cert: "/vault/tls/ca.crt"
+
+  vault.hashicorp.com/agent-inject-secret-db-config.properties: "secret/data/sit/my-app"
+  vault.hashicorp.com/agent-inject-template-db-config.properties: |
+    {{- with secret "secret/data/sit/my-app" -}}
+    DB_USER={{ .Data.data.db-username }}
+    DB_PASS={{ .Data.data.db-password }}
     {{- end -}}
