@@ -3,7 +3,7 @@ replicaCount: 3
 
 image:
   repository: tondychiu/lotto-backend
-  tag: e0d434d599482b9f13e998bc138f76999fa4b007
+  tag: 6182eb3744dbeb7dd8e3fe127a8ff2cde6d70293
 
 nodeSelector:
   pool: sit
