@@ -22,6 +22,8 @@ cluster:
   minInSyncReplicas: 2
   controllers:
     replicaCount: 3
+    podSecurityContext:
+      fsGroup: 1000
     persistence:
       storageClass: "longhorn-sit"
       size: 5Gi
@@ -34,6 +36,8 @@ cluster:
         cpu: 1000m
   brokers:
     replicaCount: 3
+    podSecurityContext:
+      fsGroup: 1000
     persistence:
       storageClass: "longhorn-sit"
       size: 10Gi
