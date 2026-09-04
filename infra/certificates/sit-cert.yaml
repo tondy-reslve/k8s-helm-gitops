@@ -28,4 +28,6 @@ certificates:
     keystores:
       pkcs12:
         create: true
-        password: "changeit"
+        passwordSecretRef:
+          name: backend-truststore-pass
+          key: password

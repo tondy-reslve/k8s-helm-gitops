@@ -19,4 +19,16 @@ spec:
   keystores:
     {{- toYaml $config.keystores | nindent 4 }}
   {{- end }}
+
+{{- if $config.keystores }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ $certName }}-pass
+  namespace: {{ $config.namespace }}
+type: Opaque
+stringData:
+  password: "changeit"
+{{- end }}
 {{- end }}
