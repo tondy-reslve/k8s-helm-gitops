@@ -48,7 +48,7 @@ spec:
         volumeMounts:
           - name: ca-pem-volume
             mountPath: /etc/ssl/certs/k8s-local-ca.crt
-            subPath: ca.crt
+            subPath: tls.crt
             readOnly: true
       volumes:
         - name: ca-pem-volume
