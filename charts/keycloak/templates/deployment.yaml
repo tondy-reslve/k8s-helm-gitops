@@ -236,7 +236,7 @@ spec:
             defaultMode: 0755
         - name: keycloak-tls
           secret:
-            secretName: "keycloak-crt"
+            secretName: "sit-crt"
         {{- with .Values.extraVolumes }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
