@@ -40,7 +40,7 @@ spec:
           value: "kafka-sit-kafka.my-app-sit.svc.cluster.local"
           
         - name: KEYCLOAK_HOST
-          value: "keycloak-sit.my-app-sit.svc.cluster.local"
+          value: "keycloak.my-app-sit.svc.cluster.local:30443"
           
         - name: REDIS_HOST
           value: "redis-sit-sentinel.my-app-sit.svc.cluster.local"
