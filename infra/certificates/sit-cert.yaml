@@ -19,3 +19,13 @@ certificates:
       - "*.valkey-sit-sentinel.my-app-sit.svc.cluster.local"
       # Common
       - "localhost"
+
+  backend-truststore:
+    namespace: sit-backend
+    commonName: "sit-backend.sit-backend.svc.cluster.local"
+    dnsNames:
+      - "sit-backend.sit-backend.svc.cluster.local"
+    keystores:
+      pkcs12:
+        create: true
+        password: "changeit"

@@ -44,3 +44,16 @@ spec:
           
         - name: REDIS_HOST
           value: "redis-sit-sentinel.my-app-sit.svc.cluster.local"
+
+        - name: JAVA_TOOL_OPTIONS
+          value: "-Djavax.net.ssl.trustStore=/etc/ssl/certs/truststore.p12 -Djavax.net.ssl.trustStoreType=PKCS12 -Djavax.net.ssl.trustStorePassword=changeit"
+
+        volumeMounts:
+          - name: truststore-volume
+            mountPath: /etc/ssl/certs/truststore.p12
+            subPath: truststore.p12
+            readOnly: true
+      volumes:
+        - name: truststore-volume
+          secret:
+            secretName: backend-truststore

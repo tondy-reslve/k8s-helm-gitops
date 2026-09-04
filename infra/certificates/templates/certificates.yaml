@@ -14,4 +14,8 @@ spec:
   commonName: {{ $config.commonName | default (index $config.dnsNames 0) | quote }}
   dnsNames:
     {{- toYaml $config.dnsNames | nindent 4 }}
+  {{- if $config.keystores }}
+  keystores:
+    {{- toYaml $config.keystores | nindent 4 }}
+  {{- end }}
 {{- end }}
