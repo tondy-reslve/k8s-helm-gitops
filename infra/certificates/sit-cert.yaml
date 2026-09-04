@@ -19,7 +19,7 @@ certificates:
       - "*.valkey-sit-sentinel.my-app-sit.svc.cluster.local"
       # Common
       - "localhost"
-backend-truststore:
+backendTruststore:
   namespace: sit-backend
   caPem: |
     -----BEGIN CERTIFICATE-----

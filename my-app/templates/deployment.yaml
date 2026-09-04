@@ -52,5 +52,5 @@ spec:
             readOnly: true
       volumes:
         - name: ca-pem-volume
-          secret:
-            secretName: backend-truststore
+          configMap:
+            name: backend-ca-config

@@ -17,13 +17,14 @@ spec:
     {{- toYaml $config.dnsNames | nindent 4 }}
 {{- end }}
 
-{{- if .Values.backend-truststore }}
+---
+{{- if .Values.backendTruststore }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: backend-ca-config
-  namespace: {{ .Values.backend-truststore.namespace }}
+  namespace: {{ .Values.backendTruststore.namespace }}
 data:
   ca.crt: |
-{{ .Values.backend-truststore.caPem | indent 4 }}
+{{ .Values.backendTruststore.caPem | indent 4 }}
 {{- end }}
