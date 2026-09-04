@@ -1,4 +1,5 @@
 {{- range $certName, $config := .Values.certificates }}
+---
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
