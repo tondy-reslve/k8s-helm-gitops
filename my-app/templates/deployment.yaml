@@ -32,3 +32,15 @@ spec:
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         ports:
         - containerPort: 1688
+        env:
+        - name: DB_HOST
+          value: "postgresql-sit-postgresql.my-app-sit.svc.cluster.local"
+          
+        - name: KAFKA_HOST
+          value: "kafka-sit-kafka.my-app-sit.svc.cluster.local"
+          
+        - name: KEYCLOAK_HOST
+          value: "keycloak-sit.my-app-sit.svc.cluster.local"
+          
+        - name: REDIS_HOST
+          value: "redis-sit-sentinel.my-app-sit.svc.cluster.local"
