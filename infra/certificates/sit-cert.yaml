@@ -19,8 +19,26 @@ certificates:
       - "*.valkey-sit-sentinel.my-app-sit.svc.cluster.local"
       # Common
       - "localhost"
-  backend-truststore:
-    namespace: sit-backend
-    commonName: "sit-backend.sit-backend.svc.cluster.local"
-    dnsNames:
-      - "sit-backend.sit-backend.svc.cluster.local"
+backend-truststore:
+  namespace: sit-backend
+  caPem: |
+    -----BEGIN CERTIFICATE-----
+    MIIDPTCCAiWgAwIBAgIUPqo5B36xjn8+4AUpk2GXYJyNPjkwDQYJKoZIhvcNAQEL
+    BQAwJjEkMCIGA1UEAxMbaW5mcmEubG9jYWwgQ2x1c3RlciBSb290IENBMB4XDTI2
+    MDgyODA4MjQxNloXDTM2MDgyNTA4MjQ0NVowJjEkMCIGA1UEAxMbaW5mcmEubG9j
+    YWwgQ2x1c3RlciBSb290IENBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
+    AQEA3+9sowx2EfNcvTgmNtjVT9fSaneEGvEvFCKra0NTytCjP7OXN7OdHXiHX/PA
+    oxE7+AQIgxVM+Sl57Y9K30y+hGS80zMxhzDS4/Oft2GaB+bJSIVh6pzE4B8TBG+A
+    U9/1lbYbQ2xStwJLxZNNjerJ7K3hI7xwfpNAkgtJYqtVQZpa2iOMadm5zoaCEyog
+    D5RjLscM1DPe+JIgavgd3h20o9Z8diJkbonAsZFmpw75yX2o9fWn7+13Aq8Zg5h1
+    UbkOttu6EhUI3dix5J5enMvmabtG/5dmDffTVl2U9MECV4aSBVZ4XEowvt5/pZxm
+    bA6b7k2FPx6FPDXvv8w00NXyuwIDAQABo2MwYTAOBgNVHQ8BAf8EBAMCAQYwDwYD
+    VR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQUgtPLYx82ArCJZkNu+TujU2TrQHcwHwYD
+    VR0jBBgwFoAUgtPLYx82ArCJZkNu+TujU2TrQHcwDQYJKoZIhvcNAQELBQADggEB
+    ACxGd/dguFLaiwRdW3xLN75rCm6RRt1Ev5OBHE+QURcG/0zk37E/PUSCkdKPZUwf
+    VBC/O+eSCL6zr2RR7QgoKYpQ5GGHCaQNL918MWGw4Kalj+dhCIHtJA5Y/BHBl30p
+    UL6UZ+Wo6D0jPF/I17NSb0WnbpXybG8Hi9iI8cO/lx76h6oGDHgTJX/zro0qr6Ky
+    sx61O617iJ4MXbzkoIDjnj28GUneIGpKsF0TOn+C2XWl1iWMx8c5p26LaYjTGJUS
+    Anc5mkFrloiQNPboi5ny7xOl5j8kx/8+0vdZkrHdCSeBf3b/M1wvdeWlX0DsVIHf
+    t127VWmCwftieSkfJ3tx6SM=
+    -----END CERTIFICATE-----
